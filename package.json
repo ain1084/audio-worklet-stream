@@ -1,0 +1,55 @@
+{
+  "name": "@ain1084/audio-worklet-stream",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
+  "description": "A library for handling audio output stream processing using AudioWorklet in the browser. It provides functionalities for real-time audio output processing with customizable buffer management, ideal for developers working on web-based audio applications.",
+  "keywords": [
+    "audio",
+    "stream",
+    "worklet",
+    "processor",
+    "real-time",
+    "web-audio",
+    "audio processing",
+    "ring buffer",
+    "audio context"
+  ],
+  "author": "Seiji Ainoguchi <seiji.ainoguchi@gmail.com>",
+  "license": "(MIT OR Apache-2.0)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ain1084/audio-worklet-stream.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ain1084/audio-worklet-stream/issues"
+  },
+  "homepage": "https://github.com/ain1084/audio-worklet-stream#readme",
+  "documentation": "https://ain1084.github.io/audio-worklet-stream/",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "lint": "eslint .",
+    "prepublishOnly": "npm run build",
+    "docs": "typedoc"
+  },
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "^2.3.0",
+    "@types/audioworklet": "^0.0.57",
+    "@types/node": "^20.14.10",
+    "@typescript-eslint/parser": "^7.16.0",
+    "eslint": "^8.57.0",
+    "globals": "^15.8.0",
+    "typedoc": "^0.26.4",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^7.16.0",
+    "vite": "^5.3.3"
+  }
+}
