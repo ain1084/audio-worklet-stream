@@ -1,0 +1,19 @@
+{
+  "name": "audio-worklet-stream-example",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run start\" \"npm --prefix .. run watch\"",
+    "start": "vite --host",
+    "build": "vite build",
+    "serve": "vite preview --host"
+  },
+  "dependencies": {
+    "@ain1084/audio-worklet-stream": "file:.."
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.3"
+  }
+}
