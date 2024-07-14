@@ -23,7 +23,7 @@ To install the library, run:
 npm install @ain1084/audio-worklet-stream
 ```
 
-You need to add `@ain1084/audio-worklet-stream` to the optimizeDeps.exclude section in `vite.config.ts`.
+You need to add `@ain1084/audio-worklet-stream` to the optimizeDeps.exclude section in `vite.config.ts`. Furthermore, include the necessary CORS settings to enable the use of `SharedArrayBuffer`.
 
 **vite.config.ts**
 ```typescript
@@ -33,10 +33,22 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['@ain1084/audio-worklet-stream']
   },
+  plugins: [
+    {
+      name: 'configure-response-headers',
+      configureServer: (server) => {
+        server.middlewares.use((_req, res, next) => {
+          res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp')
+          res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
+          next()
+        })
+      },
+    },
+  ],
 })
 ```
 
-If you are using Nuxt3, add it under `vite` in `nuxt.config.ts`.
+If you are using Nuxt3, add it under vite in `nuxt.config.ts`.
 
 **nuxt.config.ts**
 ```typescript
@@ -44,6 +56,40 @@ export default defineNuxtConfig({
   vite: {
     optimizeDeps: {
       exclude: ['@ain1084/audio-worklet-stream']
+    },
+    plugins: [
+      {
+        name: 'configure-response-headers',
+        configureServer: (server) => {
+          server.middlewares.use((_req, res, next) => {
+            res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp')
+            res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
+            next()
+          })
+        },
+      },
+    ],
+  },
+})
+```
+
+Additionally, add the Nitro configuration (needed when running `npm run build`).
+
+**nuxt.config.ts**
+```typescript
+export default defineNuxtConfig({
+  nitro: {
+    rollupConfig: {
+      external: '@ain1084/audio-worklet-stream',
+    },
+    routeRules: {
+      '/**': {
+        cors: true,
+        headers: {
+          'Cross-Origin-Embedder-Policy': 'require-corp',
+          'Cross-Origin-Opener-Policy': 'same-origin',
+        },
+      },
     },
   },
 })
@@ -150,11 +196,11 @@ class Main {
 export default new Main();
 ```
 
-### Documentation
+## Documentation
 
 For more detailed documentation, visit the [API documentation](https://ain1084.github.io/audio-worklet-stream/).
 
-### Provided Example
+## Provided Example
 
 The provided example demonstrates how to use the library to manually write audio frames to a buffer. It includes:
 
@@ -166,11 +212,25 @@ The provided example demonstrates how to use the library to manually write audio
 
 For more details, refer to the `example/README.md`.
 
-### Notes
+## Future Plans and Known Issues
+
+### Future Plans
+1. **Enhanced Documentation**: Improve the documentation with more examples and detailed explanations.
+
+### Known Issues
+1. **Buffer Underruns**: Occasional buffer underruns under heavy CPU load.
+2. **Limited Worker Support**: Advanced features in workers might not be fully supported across all browsers.
+3. **Overhead at the Start of Playback**: The ring buffer is being generated each time.
+4. **Overhead during Worker Playback**: It seems that the Worker is being loaded every time playback starts (although it hits the cache).
+
+We are continuously working on these areas to improve the library. Contributions and suggestions are always welcome!
+
+## Notes
 
 - **Vite as a Bundler**: This library utilizes Vite to enable the loading and placement of workers without complex configurations. It may not work out-of-the-box with WebPack due to differences in how bundlers handle workers. While similar methods may exist for WebPack, this library currently only supports Vite. Initially, a bundler-independent approach was considered, but a suitable method could not be found.
 
-- **Security Requirements**: Since this library uses `SharedArrayBuffer`, ensuring browser compatibility requires meeting specific security requirements. The example modifies `vite.config.ts` to work locally. For more details, refer to the [MDN Web Docs on SharedArrayBuffer Security Requirements](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements).
+- **Security Requirements**: Since this library uses `SharedArrayBuffer`, ensuring browser compatibility requires meeting specific security requirements. For more details, refer to the [MDN Web Docs on SharedArrayBuffer Security Requirements](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements).
+
 
 ## Contribution
 
