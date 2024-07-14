@@ -23,6 +23,32 @@ To install the library, run:
 npm install @ain1084/audio-worklet-stream
 ```
 
+You need to add `@ain1084/audio-worklet-stream` to the optimizeDeps.exclude section in `vite.config.ts`.
+
+**vite.config.ts**
+```typescript
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  optimizeDeps: {
+    exclude: ['@ain1084/audio-worklet-stream']
+  },
+})
+```
+
+If you are using Nuxt3, add it under `vite` in `nuxt.config.ts`.
+
+**nuxt.config.ts**
+```typescript
+export default defineNuxtConfig({
+  vite: {
+    optimizeDeps: {
+      exclude: ['@ain1084/audio-worklet-stream']
+    },
+  },
+})
+```
+
 ## Usage
 
 ### Overview
