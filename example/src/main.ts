@@ -1,4 +1,4 @@
-import { StreamNodeFactory,
+import { StopEvent, StreamNodeFactory,
   type OutputStreamNode,
 } from '@ain1084/audio-worklet-stream'
 import worker from './worker?worker'
@@ -63,7 +63,7 @@ class Main {
     if (!this.streamNode) {
       throw new Error('Invalid streamNode state')
     }
-    this.streamNode.addEventListener('stop', () => {
+    this.streamNode.addEventListener(StopEvent.type, () => {
       this.outputDiv.textContent = 'Stopped'
       this.streamNode = null
     }, { once: true })

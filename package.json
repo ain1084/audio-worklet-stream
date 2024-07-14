@@ -32,7 +32,6 @@
     "url": "https://github.com/ain1084/audio-worklet-stream/issues"
   },
   "homepage": "https://github.com/ain1084/audio-worklet-stream#readme",
-  "documentation": "https://ain1084.github.io/audio-worklet-stream/",
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
