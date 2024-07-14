@@ -2,6 +2,9 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   root: './',
+  optimizeDeps: {
+    exclude: ['@ain1084/audio-worklet-stream'],
+  },
   plugins: [
     {
       name: 'configure-response-headers',
