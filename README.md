@@ -253,7 +253,7 @@ When using `@ain1084/audio-worklet-stream` in a Nuxt 3 project, you may encounte
 
    You can disable SSR for the component that uses the package. This can be done by using `<client-only>`:
 
-   ```vue
+   ```
    <client-only>
      <MyComponent />
    </client-only>
@@ -290,19 +290,34 @@ export default defineNuxtConfig({
   ssr: false, // or use <client-only> for specific components
   vite: {
     optimizeDeps: {
-      exclude: ['@ain1084/audio-worklet-stream'],
+      exclude: ['@ain1084/audio-worklet-stream']
     },
+    plugins: [
+      {
+        name: 'configure-response-headers',
+        configureServer: (server) => {
+          server.middlewares.use((_req, res, next) => {
+            res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp')
+            res.setHeader('Cross-Origin-Opener-Policy', 'same-origin')
+            next()
+          })
+        },
+      },
+    ],
   },
   nitro: {
     rollupConfig: {
       external: '@ain1084/audio-worklet-stream',
     },
-  },
-  // Ensure CORS settings for SharedArrayBuffer
-  server: {
-    headers: {
-      'Cross-Origin-Embedder-Policy': 'require-corp',
-      'Cross-Origin-Opener-Policy': 'same-origin',
+    // Ensure CORS settings for SharedArrayBuffer
+    routeRules: {
+      '/**': {
+        cors: true,
+        headers: {
+          'Cross-Origin-Embedder-Policy': 'require-corp',
+          'Cross-Origin-Opener-Policy': 'same-origin',
+        },
+      },
     },
   },
 })
