@@ -7,6 +7,8 @@
 
 This library provides a way to work with audio worklets and streams using modern web technologies. It allows for the manual writing of audio frames to a buffer and supports various buffer writing strategies.
 
+This library was created for use in my project [fbdplay_wasm](https://github.com/ain1084/fbdplay_wasm). In this project, we utilize only a very limited set of WebAudio functionalities. It might lack features for general use.
+
 ## Features
 
 - **Manual Buffer Writing**: Provides the ability to manually write audio frames to a buffer.
@@ -14,6 +16,20 @@ This library provides a way to work with audio worklets and streams using modern
 - **Worker-Based Stability**: Utilizes Workers to ensure stable and consistent audio playback.
 - **Vite Integration**: Leverages Vite for easy worker loading and configuration without complex setup.
 - **Audio Worklet Integration**: Seamlessly integrates with the Web Audio API's Audio Worklet for real-time audio processing.
+
+## Confirmed Browser Support
+
+|Feature|Chrome|Chrome (Android)|Firefox|Safari (macOS)|Safari (iOS)|Edge|Opera|
+|:--|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+|Basic Support|![Chrome](https://img.icons8.com/color/24/000000/chrome.png)|![Chrome](https://img.icons8.com/color/24/000000/chrome.png)|![Firefox](https://img.icons8.com/color/24/000000/firefox.png)|![Safari](https://img.icons8.com/color/24/000000/safari--v2.png)|![Safari](https://img.icons8.com/color/24/000000/safari--v2.png)|![Edge](https://img.icons8.com/color/24/000000/ms-edge.png)|![Opera](https://img.icons8.com/color/24/000000/opera.png)|
+|Manual Buffer Writing|✅|✅|✅|✅|❓|✅|❓|
+|Timer-Based Buffer Writing|✅|✅|✅|🔺|❓|✅|❓|
+|Worker-Based Stability|✅|✅|✅|✅|❓|✅|❓|
+
+### Legend
+- ✅: Confirmed and working without issues
+- 🔺: Confirmed with limitations (e.g., unstable in background operation)
+- ❓: Not yet confirmed
 
 ## Prerequisites
 
@@ -218,6 +234,91 @@ The provided example demonstrates how to use the library to manually write audio
 - **HTML Entry Point** (`example/index.html`): Provides the HTML structure and buttons to control the audio stream.
 
 For more details, refer to the `example/README.md`.
+
+## Known Issues and Workarounds
+
+*Note: Some content overlaps with previous sections.*
+
+### SSR and Import Errors with ESM Modules
+
+When using `@ain1084/audio-worklet-stream` in a Nuxt 3 project, you may encounter issues during SSR (Server-Side Rendering) or when importing the package as an ESM module. This can result in errors like:
+
+```bash
+[nuxt] [request error] [unhandled] [500] Cannot find module '/path/to/node_modules/@ain1084/audio-worklet-stream/dist/esm/events' imported from '/path/to/node_modules/@ain1084/audio-worklet-stream/dist/esm/index.js'
+```
+
+### Workarounds
+
+1. **Disable SSR for the Component**
+
+   You can disable SSR for the component that uses the package. This can be done by using `<client-only>`:
+
+   ```vue
+   <client-only>
+     <MyComponent />
+   </client-only>
+   ```
+
+2. **Use ssr: false in nuxt.config.ts**
+
+   You can disable SSR for the entire project in `nuxt.config.ts`:
+
+   ```typescript
+   export default defineNuxtConfig({
+     ssr: false,
+     // other configurations
+   })
+   ```
+
+3. **Use import.meta.server and import.meta.client**
+
+   For a more granular control, you can use `import.meta.server` and `import.meta.client` to conditionally import the module only on the client-side. Note that this method is more complex compared to 1 and 2:
+
+   ```typescript
+   if (import.meta.client) {
+     const { StreamNodeFactory } = await import('@ain1084/audio-worklet-stream');
+     // Use StreamNodeFactory
+   }
+   ```
+
+### Example Configuration
+
+To ensure proper operation, it is essential to use `ssr: false` or `<client-only>` for components and to exclude `@ain1084/audio-worklet-stream` from Vite's optimization in your `nuxt.config.ts`:
+
+```typescript
+export default defineNuxtConfig({
+  ssr: false, // or use <client-only> for specific components
+  vite: {
+    optimizeDeps: {
+      exclude: ['@ain1084/audio-worklet-stream'],
+    },
+  },
+  nitro: {
+    rollupConfig: {
+      external: '@ain1084/audio-worklet-stream',
+    },
+  },
+  // Ensure CORS settings for SharedArrayBuffer
+  server: {
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+    },
+  },
+})
+```
+
+### Future Plans and Known Issues
+
+#### Future Plans
+1. **Enhanced Documentation**: Improve the documentation with more examples and detailed explanations.
+
+#### Known Issues
+1. **Buffer Underruns**: Occasional buffer underruns under heavy CPU load.
+2. **Overhead at the Start of Playback**: The ring buffer is being generated each time. To mitigate this, we plan to add a simple memory management mechanism to reuse the memory allocated for the ring buffer.
+3. **Overhead during Worker Playback**: It seems that the Worker is being loaded every time playback starts (although it hits the cache). We plan to cache the Worker in memory and reuse it.
+
+We are continuously working on these areas to improve the library. Contributions and suggestions are always welcome!
 
 ## Future Plans and Known Issues
 
