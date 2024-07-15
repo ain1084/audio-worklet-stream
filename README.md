@@ -308,18 +308,6 @@ export default defineNuxtConfig({
 })
 ```
 
-### Future Plans and Known Issues
-
-#### Future Plans
-1. **Enhanced Documentation**: Improve the documentation with more examples and detailed explanations.
-
-#### Known Issues
-1. **Buffer Underruns**: Occasional buffer underruns under heavy CPU load.
-2. **Overhead at the Start of Playback**: The ring buffer is being generated each time. To mitigate this, we plan to add a simple memory management mechanism to reuse the memory allocated for the ring buffer.
-3. **Overhead during Worker Playback**: It seems that the Worker is being loaded every time playback starts (although it hits the cache). We plan to cache the Worker in memory and reuse it.
-
-We are continuously working on these areas to improve the library. Contributions and suggestions are always welcome!
-
 ## Future Plans and Known Issues
 
 ### Future Plans
