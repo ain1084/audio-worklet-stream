@@ -1,5 +1,10 @@
 # Audio Worklet Stream Library
 
+[![npm version](https://badge.fury.io/js/@ain1084%2Faudio-worklet-stream.svg)](https://badge.fury.io/js/@ain1084%2Faudio-worklet-stream)
+[![Documentation](https://github.com/ain1084/audio-worklet-stream/workflows/docs/badge.svg)](https://github.com/ain1084/audio-worklet-stream/actions?query=workflow%3Adocs)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 This library provides a way to work with audio worklets and streams using modern web technologies. It allows for the manual writing of audio frames to a buffer and supports various buffer writing strategies.
 
 ## Features
@@ -180,6 +185,7 @@ class Main {
   }
 
   // Start the audio stream
+  // Node’s streaming process (such as timer activation) does not start until start() is called.
   start() {
     if (!this.streamNode) throw new Error('Stream node not created');
     this.streamNode.connect(this.streamNode.context.destination);
@@ -187,9 +193,10 @@ class Main {
   }
 
   // Stop the audio stream
+  // stop() internally calls node.disconnect(). Since inter-thread communication may take some time, it returns a Promise.
   stop() {
     if (!this.streamNode) throw new Error('Stream node not created');
-    this.streamNode.stop();
+    return this.streamNode.stop();
   }
 }
 
@@ -236,8 +243,13 @@ We are continuously working on these areas to improve the library. Contributions
 
 Contributions are welcome! Please open an issue or submit a pull request on GitHub.
 
-Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
-
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
+This project is licensed under multiple licenses:
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+You can choose either license depending on your project needs.
+
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.
