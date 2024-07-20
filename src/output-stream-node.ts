@@ -103,6 +103,10 @@ export class OutputStreamNode extends AudioWorkletNode {
       case 'ready':
         this.handleStopped()
         break
+      case 'stopped':
+        break
+      case 'stopping':
+        break
       default:
         throw new Error(`Cannot stop playback. Current state: ${this._state}`)
     }

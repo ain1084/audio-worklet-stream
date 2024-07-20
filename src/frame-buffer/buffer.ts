@@ -29,7 +29,7 @@ export class FrameBuffer {
    */
   public setFrames(index: number, samples: Float32Array, sampleStart: number = 0, sampleCount?: number): number {
     index *= this._samplesPerFrame
-    const sampleEnd = Math.min((sampleCount !== undefined) ? (sampleStart + sampleCount) : samples.length, samples.length)
+    const sampleEnd = (sampleCount !== undefined) ? Math.min(sampleStart + sampleCount, samples.length) : samples.length
     const frames = (sampleEnd - sampleStart) / this._samplesPerFrame
     if (!Number.isInteger(frames)) {
       throw new Error(`Error: The number of samples per frame does not match the specified number of samples. Expected samples per frame: ${this._samplesPerFrame}, but got: ${sampleEnd - sampleStart}.`)

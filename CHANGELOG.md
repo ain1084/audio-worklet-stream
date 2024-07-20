@@ -4,17 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.6] - 2023-07-16
+## [0.1.7] - 2024-07-21
+
+### Fixed
+- Fixed README.md
+ 
+### Changed
+- Modify the behavior so that calling stop() when the stream is already stopped does not throw an exception.
+
+## [0.1.6] - 2024-07-16
 
 ### Fixed
 - Fixed README.md
 
-## [0.1.5] - 2023-07-16
+## [0.1.5] - 2024-07-16
 
 ### Fixed
 - Fixed README.md
 
-## [0.1.4] - 2023-07-16
+## [0.1.4] - 2024-07-16
 
 ### Added
 - **Background Information**: Added a section to README.md explaining the purpose and origin of the package, specifically mentioning its use in the [fbdplay_wasm](https://github.com/ain1084/fbdplay_wasm) project.
@@ -27,7 +35,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Overhead at the Start of Playback**: The ring buffer is being generated each time. We plan to add a memory management mechanism to reuse the allocated memory.
 - **Overhead during Worker Playback**: It appears that the Worker is loaded every time playback starts. We plan to cache the Worker in memory and reuse it.
 
-## [0.1.3] - 2023-07-15
+## [0.1.3] - 2024-07-15
 
 ### Added
 - Added CHANGELOG.md
@@ -38,7 +46,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - Fixed README.md
 
-## [0.1.2] - 2023-07-14
+## [0.1.2] - 2024-07-14
 
 ### Added
 - Added configuration, methods for vite.config.ts and nuxt.config.ts
@@ -50,7 +58,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - None
 
-## [0.1.1] - 2023-07-14
+## [0.1.1] - 2024-07-14
 
 ### Added
 - None
@@ -64,7 +72,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 - Initial release of the audio worklet stream library.
 
-## [0.1.0] - 2023-07-14
+## [0.1.0] - 2024-07-14
 
 ### Added
 - Initial release of the audio worklet stream library.
