@@ -39,7 +39,7 @@ class Main {
       this.streamNode = await this.factory.createWorkerBufferNode<FillerParameters>(
         worker,
         { channelCount: 1,
-          fillerParams: { sampleRate: 48000, frequency: 440 },
+          fillerParams: { sampleRate: this.factory.audioContext.sampleRate, frequency: 440 },
         },
       )
       this.startStreamNode()

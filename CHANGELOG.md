@@ -21,6 +21,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added `dependi` extension to `.devcontainer/devcontainer.json` for improved dependency management in the development environment.
 - Applied `markdownlint` formatting to `CHANGELOG.md` for improved consistency and readability.
 
+### Fixed
+
+- Fixed a bug in the example where the `sampleRate` was fixed at 48000Hz when using a worker.
+  - Now, the `sampleRate` correctly references the `AudioContext` frequency.
+
 ## [0.1.7] - 2024-07-21
 
 ### Fixed
