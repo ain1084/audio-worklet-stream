@@ -28,7 +28,7 @@ class PlayContext {
           node.stop(writer.totalFrames)
         }
       }
-      catch (error) {
+      catch {
         this.cleanup()
         node.stop()
       }
