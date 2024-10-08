@@ -1,6 +1,6 @@
 {
   "name": "audio-worklet-stream-example",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run start\" \"npm --prefix .. run watch\"",
