@@ -3,7 +3,7 @@ import type { OutputStreamProcessorOptions } from './output-stream-processor'
 import { PROCESSOR_NAME } from './constants'
 import { StopEvent, UnderrunEvent } from './events'
 import { BufferWriteStrategy } from './write-strategy/strategy'
-import { FrameBufferConfig } from './frame-buffer/buffer-factory'
+import { FrameBufferConfig } from './frame-buffer/buffer-config'
 
 /**
  * Stream state
@@ -36,7 +36,7 @@ export class OutputStreamNode extends AudioWorkletNode {
    * @param bufferConfig - The configuration for the buffer.
    * @param strategy - The strategy for writing to the buffer.
    */
-  protected constructor(
+  private constructor(
     baseAudioContext: BaseAudioContext,
     bufferConfig: FrameBufferConfig,
     strategy: BufferWriteStrategy,
@@ -53,6 +53,21 @@ export class OutputStreamNode extends AudioWorkletNode {
     this._totalWriteFrames = bufferConfig.totalWriteFrames
     this._totalReadFrames = bufferConfig.totalReadFrames
     this.port.onmessage = this.handleMessage.bind(this)
+  }
+
+  /**
+   * Creates an instance of OutputStreamNode.
+   * @param audioContext - The audio context to use.
+   * @param info - The configuration for the buffer.
+   * @param strategy - The strategy for writing to the buffer.
+   * @returns A promise that resolves to an instance of OutputStreamNode.
+   */
+  public static async create(audioContext: BaseAudioContext, info: FrameBufferConfig, strategy: BufferWriteStrategy): Promise<OutputStreamNode> {
+    const node = new OutputStreamNode(audioContext, info, strategy)
+    if (!(await strategy.onInit(node))) {
+      throw new Error('Failed to onInit.')
+    }
+    return node
   }
 
   /**
@@ -84,17 +99,17 @@ export class OutputStreamNode extends AudioWorkletNode {
    * Stop the node processing at a given frame position.
    * Returns a Promise that resolves when the node has completely stopped.
    * The node is disconnected once stopping is complete.
-   * @param frames - The frame position at which to stop the processing, in frames.
-   *                   If frames is 0 or if the current playback frame position has already passed the specified value,
+   * @param framePosition - The frame position at which to stop the processing, in frames.
+   *                   If framePosition is 0 or if the current playback frame position has already passed the specified value,
    *                   the node will stop immediately.
    * @returns A promise that resolves when the node has stopped.
    */
-  public stop(frames: bigint = BigInt(0)): Promise<void> {
+  public stop(framePosition: bigint = BigInt(0)): Promise<void> {
     switch (this._state) {
       case 'started':
         return new Promise((resolve) => {
           this._state = 'stopping'
-          const message: MessageToProcessor = { type: 'stop', frames }
+          const message: MessageToProcessor = { type: 'stop', framePosition: framePosition }
           this.port.postMessage(message)
           this.addEventListener(StopEvent.type, () => {
             resolve()
@@ -121,10 +136,10 @@ export class OutputStreamNode extends AudioWorkletNode {
     switch (event.data.type) {
       case 'stop':
         this.handleStopped()
-        this.dispatchEvent(new StopEvent(event.data.frames))
+        this.dispatchEvent(new StopEvent(event.data.totalProcessedFrames))
         break
       case 'underrun':
-        this.dispatchEvent(new UnderrunEvent(event.data.frames))
+        this.dispatchEvent(new UnderrunEvent(event.data.underrunFrameCount))
         break
       default:
         throw new Error(`Unexpected event value: ${event.data}`)
@@ -176,26 +191,5 @@ export class OutputStreamNode extends AudioWorkletNode {
    */
   public get totalWriteFrames(): bigint {
     return Atomics.load(this._totalWriteFrames, 0)
-  }
-}
-
-/**
- * OutputStreamNodeFactory class
- * Factory class to create instances of OutputStreamNode.
- */
-export class OutputStreamNodeFactory extends OutputStreamNode {
-  /**
-   * Creates an instance of OutputStreamNodeFactory.
-   * @param audioContext - The audio context to use.
-   * @param info - The configuration for the buffer.
-   * @param strategy - The strategy for writing to the buffer.
-   * @returns A promise that resolves to an instance of OutputStreamNodeFactory.
-   */
-  public static async create(audioContext: BaseAudioContext, info: FrameBufferConfig, strategy: BufferWriteStrategy): Promise<OutputStreamNode> {
-    const node = new OutputStreamNodeFactory(audioContext, info, strategy)
-    if (!(await strategy.onInit(node))) {
-      throw new Error('Failed to onPrepare.')
-    }
-    return node
   }
 }

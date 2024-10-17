@@ -1,5 +1,5 @@
 import { BufferWriteStrategy } from './strategy'
-import { createFrameBufferWriter, FillerFrameBufferConfig } from '../frame-buffer/buffer-factory'
+import { createFrameBufferWriter, FillerFrameBufferConfig } from '../frame-buffer/buffer-config'
 import { FrameBufferWriter } from '../frame-buffer/buffer-writer'
 import { FrameBufferFiller } from '../frame-buffer/buffer-filler'
 import { OutputStreamNode } from '../output-stream-node'

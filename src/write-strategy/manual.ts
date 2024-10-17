@@ -1,5 +1,5 @@
 import { BufferWriteStrategy } from './strategy'
-import { createFrameBufferWriter, FrameBufferConfig } from '../frame-buffer/buffer-factory'
+import { createFrameBufferWriter, FrameBufferConfig } from '../frame-buffer/buffer-config'
 import { FrameBufferWriter } from '../frame-buffer/buffer-writer'
 
 /**
