@@ -1,7 +1,7 @@
 import processor from './output-stream-processor?worker&url'
 import { ManualBufferWriteStrategy } from './write-strategy/manual'
-import { FrameBufferFactory } from './frame-buffer/buffer-factory'
-import type { OutputStreamNode, OutputStreamNodeFactory } from './output-stream-node'
+import { createFillerFrameBufferConfig, createFrameBufferConfig } from './frame-buffer/buffer-config'
+import type { OutputStreamNode } from './output-stream-node'
 import { TimedBufferWriteStrategy } from './write-strategy/timed'
 import type { FrameBufferFiller } from './frame-buffer/buffer-filler'
 import { FrameBufferWriter } from './frame-buffer/buffer-writer'
@@ -47,14 +47,14 @@ export type WorkerBufferNodeParams<T> = TimedBufferNodeParams & Readonly<{
  */
 export class StreamNodeFactory {
   private _audioContext: AudioContext
-  private readonly _outputStreamNodeFactory: typeof OutputStreamNodeFactory
+  private readonly _outputStreamNodeFactory: typeof OutputStreamNode
 
   /**
    * Constructor for StreamNodeFactory.
    * @param context - The AudioContext to use.
    * @param outputStreamNodeFactory - The factory for creating OutputStreamNode instances.
    */
-  private constructor(context: AudioContext, outputStreamNodeFactory: typeof OutputStreamNodeFactory) {
+  private constructor(context: AudioContext, outputStreamNodeFactory: typeof OutputStreamNode) {
     this._audioContext = context
     this._outputStreamNodeFactory = outputStreamNodeFactory
   }
@@ -72,7 +72,7 @@ export class StreamNodeFactory {
         context.audioWorklet.addModule(processor),
         import('./output-stream-node'),
       ])
-      return new StreamNodeFactory(context, loadResults[1].OutputStreamNodeFactory)
+      return new StreamNodeFactory(context, loadResults[1].OutputStreamNode)
     }
     catch (error) {
       throw new Error('Failed to load modules: ' + error)
@@ -91,9 +91,9 @@ export class StreamNodeFactory {
     if (params.frameBufferSize <= 0 || !Number.isInteger(params.frameBufferSize)) {
       throw new Error('Invalid frameBufferSize: must be a positive integer.')
     }
-    const bufferConfig = FrameBufferFactory.createFrameBufferConfig({ ...params })
-    const strategy = new ManualBufferWriteStrategy(bufferConfig)
-    return [await this._outputStreamNodeFactory.create(this.audioContext, bufferConfig, strategy), strategy.writer]
+    const config = createFrameBufferConfig({ ...params })
+    const strategy = new ManualBufferWriteStrategy(config)
+    return [await this._outputStreamNodeFactory.create(this.audioContext, config, strategy), strategy.writer]
   }
 
   /**
@@ -105,13 +105,14 @@ export class StreamNodeFactory {
   public async createTimedBufferNode(
     frameFiller: FrameBufferFiller, params: TimedBufferNodeParams,
   ): Promise<OutputStreamNode> {
-    StreamNodeFactory.validateTimedBufferNodeParams(params)
     if (typeof frameFiller !== 'object' || frameFiller === null) {
       throw new Error('Invalid frameFiller: must be an object.')
     }
-    const config = FrameBufferFactory.createFillerFrameBufferConfig(this._audioContext.sampleRate, { ...params })
-    const strategy = new TimedBufferWriteStrategy(config, frameFiller)
-    return this._outputStreamNodeFactory.create(this.audioContext, config, strategy)
+    StreamNodeFactory.validateTimedBufferNodeParams(params)
+    const paramsWithSampleRate = StreamNodeFactory.applySampleRateToParams(params, this._audioContext.sampleRate)
+    const config = createFillerFrameBufferConfig(paramsWithSampleRate)
+    return this._outputStreamNodeFactory.create(this.audioContext, config,
+      new TimedBufferWriteStrategy(config, frameFiller))
   }
 
   /**
@@ -124,9 +125,10 @@ export class StreamNodeFactory {
     worker: new () => Worker, params: WorkerBufferNodeParams<FillerParams>,
   ): Promise<OutputStreamNode> {
     StreamNodeFactory.validateTimedBufferNodeParams(params)
-    const config = FrameBufferFactory.createFillerFrameBufferConfig(this._audioContext.sampleRate, { ...params })
-    const strategy = new WorkerBufferWriteStrategy<FillerParams>(config, worker, params.fillerParams)
-    return this._outputStreamNodeFactory.create(this._audioContext, config, strategy)
+    const paramsWithSampleRate = StreamNodeFactory.applySampleRateToParams(params, this._audioContext.sampleRate)
+    const config = createFillerFrameBufferConfig(paramsWithSampleRate)
+    return this._outputStreamNodeFactory.create(this._audioContext, config,
+      new WorkerBufferWriteStrategy<FillerParams>(config, worker, params.fillerParams))
   }
 
   /**
@@ -148,6 +150,22 @@ export class StreamNodeFactory {
     // Check if 'frameBufferChunks' is a positive integer if provided
     if (params.frameBufferChunks !== undefined && (!Number.isInteger(params.frameBufferChunks) || params.frameBufferChunks <= 0)) {
       throw new Error('Invalid frameBufferChunks: must be a positive integer.')
+    }
+  }
+
+  /**
+   * Applies a default sample rate to the given parameters if the sampleRate is undefined.
+   * This function creates a new TimedBufferNodeParams object with the specified sampleRate,
+   * while keeping other properties unchanged.
+   *
+   * @param params - The original parameters for the TimedBufferNode.
+   * @param defaultSampleRate - The default sample rate to use if params.sampleRate is undefined.
+   * @returns A new TimedBufferNodeParams object with the sample rate applied.
+   */
+  private static applySampleRateToParams(params: TimedBufferNodeParams, defaultSampleRate: number): TimedBufferNodeParams {
+    return {
+      ...params,
+      sampleRate: params.sampleRate ?? defaultSampleRate,
     }
   }
 

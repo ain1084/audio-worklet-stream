@@ -33,6 +33,7 @@ This library uses modern Web APIs and is designed for contemporary browsers only
 |Worker-Based Stability|✅|✅|✅|✅|❓|✅|❓|
 
 Legend:
+
 - ✅: Confirmed and working without issues
 - 🔺: Confirmed with limitations (e.g., unstable in background operation)
 - ❓: Not yet confirmed
@@ -61,7 +62,8 @@ npm install @ain1084/audio-worklet-stream
 
 You need to add `@ain1084/audio-worklet-stream` to the optimizeDeps.exclude section in `vite.config.ts`. Furthermore, include the necessary CORS settings to enable the use of `SharedArrayBuffer`.
 
-**vite.config.ts**
+### vite.config.ts
+
 ```typescript
 import { defineConfig } from 'vite'
 
@@ -86,7 +88,8 @@ export default defineConfig({
 
 If you are using Nuxt3, add it under vite in `nuxt.config.ts`.
 
-**nuxt.config.ts**
+### nuxt.config.ts
+
 ```typescript
 export default defineNuxtConfig({
   vite: {
@@ -141,6 +144,7 @@ Instances of OutputStreamNode cannot be constructed directly. First, an instance
 The library does not handle the construction or destruction of AudioContext. When constructing AudioContext, be sure to do so in response to a user interaction, such as a UI event (e.g., button press).
 
 Example:
+
 ```typescript
 let audioContext: AudioContext | null = null
 let factory: StreamNodeFactory | null = null
@@ -200,10 +204,12 @@ As outlined in the overview, OutputStreamNode requires external audio samples. T
 Understanding these parameters is crucial for optimal audio performance:
 
 ### channelCount (All strategies)
+
 - Specifies the number of audio channels (e.g., 2 for stereo).
 - Determines the sample composition within each frame.
 
 ### frameBufferSize (Manual strategy only)
+
 - Defines the size of the ring buffer in frames.
 - For continuous streaming, new frames must be supplied before buffer depletion.
 - Larger size: Less susceptible to interruptions, but increases latency.
@@ -212,15 +218,18 @@ Understanding these parameters is crucial for optimal audio performance:
 - Timed/Worker strategies: Calculated internally based on fillInterval.
 
 ### fillInterval (Timed and Worker strategies only)
+
 - Specifies the interval for buffer refill timer.
 - Default: 20ms.
 
 ### frameBufferChunks (Timed and Worker strategies only)
+
 - Specifies the number of chunks in the total buffer size.
 - Default: 5.
 
 Example calculation:
 For 48kHz sample rate and 20ms fillInterval:
+
 - One chunk size = 48000 * 0.02 = 960 frames
 - Total buffer size with default 5 chunks = 960 * 5 = 4800 frames
 
@@ -298,30 +307,6 @@ By following these guidelines, you can ensure that your audio application runs e
 <summary>Click to expand advanced usage details</summary>
 
 This guide covers advanced usage scenarios and techniques for the Audio Worklet Stream Library.
-
-### Custom Buffer Filling Strategies
-
-While the library provides manual, timed, and worker-based strategies, you can create custom strategies:
-
-1. Implement the `BufferWriteStrategy` interface.
-2. Override the `onInit`, `onStart`, and `onStopped` methods to define your custom behavior.
-
-Example:
-```typescript
-class CustomStrategy implements BufferWriteStrategy {
-  async onInit(node: OutputStreamNode): Promise<boolean> {
-    // Custom initialization logic
-  }
-
-  onStart(node: OutputStreamNode): boolean {
-    // Custom start logic
-  }
-
-  onStopped(): void {
-    // Custom stop logic
-  }
-}
-```
 
 ### Advanced Worker Usage
 
@@ -451,7 +436,7 @@ When using `@ain1084/audio-worklet-stream` in a Nuxt 3 project, you may encounte
 
    You can disable SSR for the component that uses the package. This can be done by using `<client-only>`:
 
-   ```
+   ```vue
    <client-only>
      <MyComponent />
    </client-only>

@@ -1,5 +1,5 @@
 import type { BufferWriteStrategy } from '../strategy'
-import type { FillerFrameBufferConfig } from '../../frame-buffer/buffer-factory'
+import type { FillerFrameBufferConfig } from '../../frame-buffer/buffer-config'
 import type { MessageToStrategy, MessageToWorker } from './message'
 import type { OutputStreamNode } from '../../output-stream-node'
 

@@ -4,21 +4,21 @@
  * @typeParam type - The type of message. Can be 'stop' or 'underrun'.
  *
  * For 'stop' messages:
- * @property frames - The total frames processed when stopped.
+ * @property totalProcessedFrames - The total frames processed when stopped.
  *
  * For 'underrun' messages:
- * @property frames - The number of frames that have been underrun.
+ * @property underrunFrameCount - The number of frames that have been underrun.
  *
  * Example:
  * ```typescript
- * const message: MessageToAudioNode = { type: 'stop', frames: 1000n };
+ * const message: MessageToAudioNode = { type: 'stop', totalProcessedFrames: 1000n };
  * // or
- * const message: MessageToAudioNode = { type: 'underrun', frames: 256 };
+ * const message: MessageToAudioNode = { type: 'underrun', underrunFrameCount: 256 };
  * ```
  */
 export type MessageToAudioNode =
-  | { type: 'stop', frames: bigint }
-  | { type: 'underrun', frames: number }
+  | { type: 'stop', totalProcessedFrames: bigint }
+  | { type: 'underrun', underrunFrameCount: number }
 
 /**
  * Messages sent from the main thread to the processor.
@@ -26,12 +26,12 @@ export type MessageToAudioNode =
  * @typeParam type - The type of message. Can be 'stop'.
  *
  * For 'stop' messages:
- * @property frames - The position in frames to stop at.
+ * @property framePosition - The position in frames to stop at.
  *
  * Example:
  * ```typescript
- * const message: MessageToProcessor = { type: 'stop', frames: 1000n };
+ * const message: MessageToProcessor = { type: 'stop', framePosition: 1000n };
  * ```
  */
 export type MessageToProcessor =
-  | { type: 'stop', frames: bigint }
+  | { type: 'stop', framePosition: bigint }

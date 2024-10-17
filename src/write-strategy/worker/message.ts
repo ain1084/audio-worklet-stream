@@ -1,4 +1,4 @@
-import type { FillerFrameBufferConfig } from '../../frame-buffer/buffer-factory'
+import type { FillerFrameBufferConfig } from '../../frame-buffer/buffer-config'
 
 /**
  * Message sent from the main thread to the worker.

@@ -8,9 +8,9 @@ export class StopEvent extends Event {
   public static readonly type = STOP_EVENT_TYPE
   /**
    * Creates an instance of StopEvent.
-   * @param frames - The position in the audio stream where the stop occurred.
+   * @param stoppedAtFrame - The position in the audio stream where the stop occurred.
    */
-  public constructor(readonly frames: bigint) {
+  public constructor(readonly stoppedAtFrame: bigint) {
     super(StopEvent.type)
   }
 }
@@ -24,9 +24,9 @@ export class UnderrunEvent extends Event {
   public static readonly type = UNDERRUN_EVENT_TYPE
   /**
    * Creates an instance of UnderrunEvent.
-   * @param frames - The number of frames that were not processed due to the underrun.
+   * @param frameCount - The number of frames that were not processed due to the underrun.
    */
-  public constructor(readonly frames: number) {
+  public constructor(readonly frameCount: number) {
     super(UnderrunEvent.type)
   }
 }

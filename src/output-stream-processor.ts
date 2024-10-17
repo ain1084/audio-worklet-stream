@@ -32,8 +32,8 @@ const createFrameBufferReader = (options: OutputStreamProcessorOptions) => {
 class OutputStreamProcessor extends AudioWorkletProcessor {
   private readonly _frameReader: FrameBufferReader
   private _shouldStop = false
-  private _stopFrames: bigint | undefined
-  private _underrunFrames = 0
+  private _stopFramePosition: bigint | undefined
+  private _underrunFrameCount = 0
 
   /**
    * Creates an instance of OutputStreamProcessor.
@@ -53,12 +53,12 @@ class OutputStreamProcessor extends AudioWorkletProcessor {
     if (event.data.type !== 'stop') {
       throw new Error(`Unexpected message type: ${event.data.type}`)
     }
-    const frames = event.data.frames
-    if (frames <= 0) {
+    const framePosition = event.data.framePosition
+    if (framePosition <= 0) {
       this._shouldStop = true
     }
     else {
-      this._stopFrames = frames
+      this._stopFramePosition = framePosition
     }
   }
 
@@ -67,18 +67,18 @@ class OutputStreamProcessor extends AudioWorkletProcessor {
    * If underrunFrames is provided and not zero, it adds to the current underrun frame count.
    * If underrunFrames is 0, it indicates that the underrun state has been resolved,
    * and the total underrun frame count is sent to the main thread before being reset.
-   * @param underrunFrames - The number of underrun frames to add (default is 0).
+   * @param underrunFrameCount - The number of underrun frames to add (default is 0).
    */
-  private updateUnderrun(underrunFrames: number = 0): void {
-    if (underrunFrames !== 0) {
-      this._underrunFrames += underrunFrames
+  private updateUnderrun(underrunFrameCount: number = 0): void {
+    if (underrunFrameCount !== 0) {
+      this._underrunFrameCount += underrunFrameCount
       return
     }
-    if (this._underrunFrames === 0) {
+    if (this._underrunFrameCount === 0) {
       return
     }
-    this.port.postMessage({ type: 'underrun', frames: this._underrunFrames } as MessageToAudioNode)
-    this._underrunFrames = 0
+    this.port.postMessage({ type: 'underrun', underrunFrameCount: this._underrunFrameCount } as MessageToAudioNode)
+    this._underrunFrameCount = 0
   }
 
   /**
@@ -86,7 +86,7 @@ class OutputStreamProcessor extends AudioWorkletProcessor {
    * @param totalFrames - The total number of frames processed so far.
    */
   private checkStopCondition(totalFrames: bigint) {
-    if (this._stopFrames !== undefined && totalFrames >= this._stopFrames) {
+    if (this._stopFramePosition !== undefined && totalFrames >= this._stopFramePosition) {
       this._shouldStop = true
     }
   }
@@ -99,16 +99,23 @@ class OutputStreamProcessor extends AudioWorkletProcessor {
    */
   process(_inputs: Float32Array[][], outputs: Float32Array[][]): boolean {
     const output = outputs[0]
-    const readFrames = this._frameReader.read((frame, offset) => {
-      const frames = Math.min(frame.frames, output[0].length - offset)
-      frame.buffer.convertToOutput(frame.index, frames, output, offset)
-      return frames
+    const samplesPerFrame = output.length
+    const readFrames = this._frameReader.read((buffer, offset) => {
+      const bufferFrameCount = buffer.length / samplesPerFrame
+      const frameCount = Math.min(bufferFrameCount, output[0].length - offset)
+      // Deinterleaves interleaved audio frame data and writes it to the output.
+      output.forEach((outputChannel, channelIndex) => {
+        for (let i = channelIndex, j = 0; j < frameCount; i += samplesPerFrame, ++j) {
+          outputChannel[offset + j] = buffer[i]
+        }
+      })
+      return frameCount
     })
     const totalFrames = this._frameReader.totalFrames
     this.checkStopCondition(totalFrames)
     if (this._shouldStop) {
       this.updateUnderrun()
-      this.port.postMessage({ type: 'stop', frames: totalFrames } as MessageToAudioNode)
+      this.port.postMessage({ type: 'stop', totalProcessedFrames: totalFrames } as MessageToAudioNode)
       this.port.close()
       return false
     }

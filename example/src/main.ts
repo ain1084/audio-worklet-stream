@@ -20,11 +20,12 @@ class Main {
       if (!this.factory) {
         throw new Error('Invalid factory state')
       }
+      const frequencies = [440]
       this.streamNode = await this.factory.createTimedBufferNode(
         new SineWaveFrameBufferFiller(
-          { sampleRate: this.factory.audioContext.sampleRate, frequency: 440 },
+          { sampleRate: this.factory.audioContext.sampleRate, frequencies },
         ),
-        { channelCount: 1 },
+        { channelCount: frequencies.length },
       )
       this.startStreamNode()
     })
@@ -36,10 +37,11 @@ class Main {
       if (!this.factory) {
         throw new Error('Invalid factory state')
       }
+      const frequencies = [440, 431]
       this.streamNode = await this.factory.createWorkerBufferNode<FillerParameters>(
         worker,
-        { channelCount: 1,
-          fillerParams: { sampleRate: this.factory.audioContext.sampleRate, frequency: 440 },
+        { channelCount: frequencies.length,
+          fillerParams: { sampleRate: this.factory.audioContext.sampleRate, frequencies },
         },
       )
       this.startStreamNode()

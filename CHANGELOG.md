@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2024-10-18
+
+### Breaking Changes
+
+- Removed the `setFrames` function from the `FrameBuffer` class. There is no replacement for this function, so any code using it must be rewritten.
+- Changed the arguments passed to the callback functions in `FrameBufferWriter.write` and `FrameBufferReader.read`. Instead of passing a `FrameBuffer` instance and start index, a `subarray` representing the valid portion of the frame buffer is now passed.
+
+### Improvements
+
+- Renamed ambiguous function and argument names to make them more descriptive and easier to understand (e.g., `frames` -> `frameCount`, `available` -> `availableFrames`).
+
+### Fixed
+
+- Fixed an issue where multi-channel (including stereo) playback was not functioning correctly.
+
 ## [0.1.8] - 2024-10-09
 
 ### Security

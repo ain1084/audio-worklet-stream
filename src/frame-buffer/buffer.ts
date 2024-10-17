@@ -5,7 +5,7 @@
 export class FrameBuffer {
   private readonly _buffer: Float32Array
   private readonly _samplesPerFrame: number
-  private readonly _length: number
+  private readonly _frameCount: number
 
   /**
    * Creates an instance of FrameBuffer.
@@ -15,54 +15,65 @@ export class FrameBuffer {
   public constructor(buffer: Float32Array, samplesPerFrame: number) {
     this._buffer = buffer
     this._samplesPerFrame = samplesPerFrame
-    this._length = Math.floor(buffer.length / samplesPerFrame)
+    this._frameCount = Math.floor(buffer.length / samplesPerFrame)
   }
 
   /**
-   * Sets the frame data in the buffer.
-   * @param index - The starting index in the buffer.
-   * @param samples - The samples to set in the buffer.
-   * @param sampleStart - The starting position in the samples array (default is 0).
-   * @param sampleCount - The number of samples to set (default is the length of the samples array).
-   * @returns A number of written frames.
-   * @throws Error - If the number of samples per frame does not match the specified number of samples.
+   * Gets the count of the buffer in frames.
+   * @returns The count of the buffer in frames.
    */
-  public setFrames(index: number, samples: Float32Array, sampleStart: number = 0, sampleCount?: number): number {
-    index *= this._samplesPerFrame
-    const sampleEnd = (sampleCount !== undefined) ? Math.min(sampleStart + sampleCount, samples.length) : samples.length
-    const frames = (sampleEnd - sampleStart) / this._samplesPerFrame
-    if (!Number.isInteger(frames)) {
-      throw new Error(`Error: The number of samples per frame does not match the specified number of samples. Expected samples per frame: ${this._samplesPerFrame}, but got: ${sampleEnd - sampleStart}.`)
-    }
-    for (let sampleIndex = sampleStart; sampleIndex < sampleEnd; ++sampleIndex, ++index) {
-      this._buffer[index] = samples[sampleIndex]
-    }
-    return frames
+  public get frameCount(): number {
+    return this._frameCount
+  }
+
+  private getFrames(index: number, count: number): Float32Array {
+    return this._buffer.subarray(index * this._samplesPerFrame, (index + count) * this._samplesPerFrame)
   }
 
   /**
-   * Converts the frame data to output.
-   * This method is intended to be called from within the process method of the AudioWorkletProcessor.
-   * It converts the interleaved frame data to the structure expected by the process method's outputs.
-   * @param frameIndex - The index of the frame to convert.
-   * @param frames - The number of frames to convert.
-   * @param output - The output array to store the converted data.
-   * @param outputOffset - The offset in the output array at which to start storing the data.
+   * Processes sections of a Float32Array buffer using a callback function.
+   * This function handles one or more segments within the ring buffer and invokes
+   * the provided callback for each segment. It is intended for internal use only.
+   *
+   * @param startIndex - The starting index in the buffer from where processing should begin.
+   * @param availableFrames - The total number of frames available to process in the buffer.
+   * @param processFrameSegment - The callback function invoked for each segment
+   *   of the ring buffer during enumeration. It receives:
+   *   1. `buffer`: A Float32Array representing the segment to process. The buffer is an array
+   *      of samples but is always provided in frame-sized segments.
+   *   2. `offset`: The cumulative number of frames processed so far, used as the starting index
+   *      for the current segment relative to the entire data.
+   *   The callback must return the number of frames it successfully processed.
+   *   If the callback processes fewer frames than available in the current segment,
+   *   processing will stop early.
+   *
+   * @returns An object containing:
+   *          - totalProcessedFrames: The number of frames successfully processed.
+   *          - nextIndex: The index in the buffer for the next processing cycle.
+   *
+   * @throws RangeError - If the processFrameSegment callback returns a processed length greater than the available section length.
+   *
+   * @remarks The buffer is always provided in frame-sized segments, meaning that the buffer contains complete frames.
+   * You must process the buffer in frame-sized chunks based on the structure of the frames.
    */
-  public convertToOutput(frameIndex: number, frames: number, output: Float32Array[], outputOffset: number): void {
-    const samplesPerFrame = this._samplesPerFrame
-    output.forEach((outputChannel, channelNumber) => {
-      for (let i = channelNumber, j = 0; j < frames; i += samplesPerFrame, ++j) {
-        outputChannel[outputOffset + j] = this._buffer[frameIndex + i]
+  public enumFrameSegments(startIndex: number, availableFrames: number,
+    processFrameSegment: (buffer: Float32Array, offset: number) => number): { totalProcessedFrames: number, nextIndex: number } {
+    let totalProcessedFrames = 0
+    while (totalProcessedFrames < availableFrames) {
+      // Determine the length of the current section to process
+      const sectionFrames = Math.min(this.frameCount - startIndex, availableFrames - totalProcessedFrames)
+      // Process the current section using the frameCallback function
+      const processedFrames = processFrameSegment(this.getFrames(startIndex, sectionFrames), totalProcessedFrames)
+      // Ensure the processed length does not exceed the section length
+      if (processedFrames > sectionFrames) {
+        throw new RangeError(`Processed frames (${processedFrames}) exceeds section frames (${sectionFrames})`)
       }
-    })
-  }
-
-  /**
-   * Gets the length of the buffer in frames.
-   * @returns The length of the buffer in frames.
-   */
-  public get length(): number {
-    return this._length
+      totalProcessedFrames += processedFrames
+      startIndex = (startIndex + processedFrames) % this.frameCount
+      if (processedFrames < sectionFrames) {
+        break
+      }
+    }
+    return { totalProcessedFrames, nextIndex: startIndex }
   }
 }
