@@ -60,7 +60,7 @@ npm install @ain1084/audio-worklet-stream
 <details>
 <summary>Click to view configuration details</summary>
 
-You need to add `@ain1084/audio-worklet-stream` to the optimizeDeps.exclude section in `vite.config.ts`. Furthermore, include the necessary CORS settings to enable the use of `SharedArrayBuffer`.
+You need to add `@ain1084/audio-worklet-stream` to the optimizeDeps.exclude section in `vite.config.ts`. Furthermore, include the necessary **COOP (Cross-Origin Opener Policy)** and **COEP (Cross-Origin Embedder Policy)** settings to enable the use of `SharedArrayBuffer`.
 
 ### vite.config.ts
 
@@ -115,7 +115,6 @@ export default defineNuxtConfig({
     },
     routeRules: {
       '/**': {
-        cors: true,
         headers: {
           'Cross-Origin-Embedder-Policy': 'require-corp',
           'Cross-Origin-Opener-Policy': 'same-origin',
@@ -242,17 +241,17 @@ The actual values may slightly differ from the above because they are rounded up
 <details>
 <summary>Click to view example details</summary>
 
-The example can be found at [https://github.com/ain1084/audio-worklet-stream/tree/main/example](https://github.com/ain1084/audio-worklet-stream/tree/main/example).
+The example can be found at [example](https://github.com/ain1084/audio-worklet-stream/tree/main/example).
 
 The provided example demonstrates how to use the library to manually write audio frames to a buffer. It includes:
 
-- **Main Application** (`example/src/main.ts`): Sets up and starts the audio stream using different buffer writing strategies.
-- **Sine Wave Filler** (`example/src/sine-wave-frame-buffer-filler.ts`): Implements a frame buffer filler that generates a sine wave.
-- **Sine Wave Generator** (`example/src/sine-wave-generator.ts`): Generates sine wave values for the buffer filler.
-- **Worker** (`example/src/worker.ts`): Sets up a worker to handle buffer filling tasks.
-- **HTML Entry Point** (`example/index.html`): Provides the HTML structure and buttons to control the audio stream.
+- **Main Application** ([example/src/main.ts](https://github.com/ain1084/audio-worklet-stream/blob/main/example/src/main.ts)): Sets up and starts the audio stream using different buffer writing strategies.
+- **Sine Wave Filler** ([example/src/sine-wave-frame-buffer-filler.ts](https://github.com/ain1084/audio-worklet-stream/blob/main/example/src/sine-wave-frame-buffer-filler.ts)): Implements a frame buffer filler that generates a sine wave.
+- **Sine Wave Generator** ([example/src/sine-wave-generator.ts](https://github.com/ain1084/audio-worklet-stream/blob/main/example/src/sine-wave-generator.ts)): Generates sine wave values for the buffer filler.
+- **Worker** ([example/src/worker.ts](https://github.com/ain1084/audio-worklet-stream/blob/main/example/src/worker.ts)): Sets up a worker to handle buffer filling tasks.
+- **HTML Entry Point** ([example/index.html](https://github.com/ain1084/audio-worklet-stream/blob/main/example/index.html)): Provides the HTML structure and buttons to control the audio stream.
 
-For more details, refer to the [example/README.md](https://github.com/ain1084/audio-worklet-stream/tree/main/example/README.md).
+For more details, refer to the [example/README.md](https://github.com/ain1084/audio-worklet-stream/blob/main/example/README.md).
 
 </details>
 
@@ -400,9 +399,9 @@ If you're experiencing frequent UnderrunEvents:
 1. Ensure `@ain1084/audio-worklet-stream` is properly installed.
 2. Check your bundler configuration, especially the `optimizeDeps.exclude` setting in Vite.
 
-#### CORS Errors
+#### Browser Errors
 
-1. Verify that you've set the correct CORS headers as described in the installation instructions.
+1. Verify that you've set the correct **COOP (Cross-Origin Opener Policy)** and **COEP (Cross-Origin Embedder Policy)** headers as described in the installation instructions.
 2. If using a development server, ensure it's configured to send the required headers.
 
 ### Performance Issues
@@ -492,10 +491,9 @@ export default defineNuxtConfig({
     rollupConfig: {
       external: '@ain1084/audio-worklet-stream',
     },
-    // Ensure CORS settings for SharedArrayBuffer
+    // Ensure COEP and COOP settings for SharedArrayBuffer
     routeRules: {
       '/**': {
-        cors: true,
         headers: {
           'Cross-Origin-Embedder-Policy': 'require-corp',
           'Cross-Origin-Opener-Policy': 'same-origin',
