@@ -53,6 +53,7 @@ export class FrameBufferWriter {
    *   1. `buffer`: A Float32Array representing the writable segment of the buffer.
    *   2. `offset`: The cumulative number of frames processed so far, used as the starting index
    *      for the current segment relative to the entire data.
+   *
    *   The callback must return the number of frames it successfully wrote.
    *   If the callback writes fewer frames than available in the current segment,
    *   processing will stop early.

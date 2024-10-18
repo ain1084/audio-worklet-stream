@@ -52,6 +52,7 @@ export class FrameBufferReader {
    *   1. `buffer`: A Float32Array representing the readable segment of the buffer.
    *   2. `offset`: The cumulative number of frames processed so far, used as the starting index
    *      for the current segment relative to the entire data.
+   *
    *   The callback must return the number of frames it successfully processed.
    *   If the callback processes fewer frames than available in the current segment,
    *   processing will stop early.
