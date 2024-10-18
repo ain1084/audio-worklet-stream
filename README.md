@@ -236,6 +236,10 @@ The actual values may slightly differ from the above because they are rounded up
 
 </details>
 
+## API Documentation
+
+You can find the full API documentation [here](https://ain1084.github.io/audio-worklet-stream/).
+
 ## Example
 
 <details>
