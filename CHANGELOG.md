@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.X] - XXXX-XX-XX
+
+### Added
+
+- Added a note in the **Worker** section of README.md, clarifying that data passed from the UI thread to the Worker (such as `fillerParams` in `WorkerBufferNodeParams<T>`) must be serializable. This includes primitives, arrays, and objects, while non-serializable values like functions or DOM elements are not allowed.
+
+### Updated
+
+- Improved the description in the **Worker** section of README.md to provide more clarity on how the `FrameBufferFiller` is instantiated and managed within the Worker.
+
 ## [1.0.3] - 2024-10-20
 
 ### Added

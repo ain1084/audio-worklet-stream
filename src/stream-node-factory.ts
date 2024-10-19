@@ -35,7 +35,11 @@ export type TimedBufferNodeParams = Readonly<{
  * Parameters for creating a worker buffer node.
  */
 export type WorkerBufferNodeParams<T> = TimedBufferNodeParams & Readonly<{
-  /** Parameters specific to the filler used in the worker. */
+  /**
+   * Parameters specific to the filler used in the worker.
+   * Note: The values passed as `T` must be serializable (e.g., primitives, arrays, objects).
+   * Non-serializable values such as functions or DOM elements cannot be passed.
+   */
   fillerParams: T
 }>
 
