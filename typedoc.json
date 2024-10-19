@@ -1,5 +1,5 @@
 {
-  "entryPoints": ["src/index.ts", "src/frame-buffer/buffer.ts", "src/frame-buffer/buffer-utils.ts", "src/stream-node-factory.ts"],
+  "entryPoints": ["src/index.ts", "src/stream-node-factory.ts"],
   "out": "docs",
   "excludePrivate": true,
   "excludeProtected": true,
