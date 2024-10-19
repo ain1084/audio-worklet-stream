@@ -150,7 +150,9 @@ const clicked = async () => {
     audioContext = new AudioContext()
     factory = await StreamNodeFactory.create(audioContext)
   }
-  const node = await factory.createManualBufferNode( { channelCount: 2, frameBufferSize: 4096 })
+  const { node, writer } = await factory.createManualBufferNode(
+    { channelCount: 2, frameBufferSize: 4096 }
+  )
 }
 ```
 
@@ -158,7 +160,7 @@ const clicked = async () => {
 
 As outlined in the overview, OutputStreamNode requires external audio samples. These samples must be written to a ring buffer, and there are several methods to achieve this.
 
-**Note:** The diagrams are simplified for ease of understanding and may differ from the actual implementation.
+**Note**: The diagrams are simplified for ease of understanding and may differ from the actual implementation.
 
 #### Manual
 
@@ -190,6 +192,8 @@ As outlined in the overview, OutputStreamNode requires external audio samples. T
 - The `FrameBufferFiller` implementation is instantiated within the Worker.
 - You need to create a custom Worker. However, helper implementations are available to simplify this process. Essentially, you only need to specify the `FrameBufferFiller` implementation class within the Worker.
 - Depending on how you implement the `FrameBufferFiller` class, you can use the same implementation as the Timed method.
+
+**Note**: Any data passed from the UI thread to the Worker (such as fillerParams in the WorkerBufferNodeParams<T>) must be serializable (e.g., primitives, arrays, objects). Non-serializable values like functions or DOM elements cannot be passed.
 
 ### Buffer Underrun Handling
 
@@ -235,7 +239,7 @@ For 48kHz sample rate and 20ms fillInterval:
 - One chunk size = 48000 * 0.02 = 960 frames
 - Total buffer size with default 5 chunks = 960 * 5 = 4800 frames
 
-The actual values may slightly differ from the above because they are rounded up to 128 sample units.
+The actual values may slightly differ from the above because they are rounded up to 128 frame units.
 
 </details>
 
