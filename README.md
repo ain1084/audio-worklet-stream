@@ -129,9 +129,6 @@ export default defineNuxtConfig({
 
 ## Usage
 
-<details>
-<summary>Click to expand usage details</summary>
-
 ### Overview
 
 This library continuously plays audio sample frames using AudioWorkletNode. The audio sample frames need to be supplied externally via a ring buffer. The library provides functionality to retrieve the number of written and read (played) frames and allows stopping playback at a specified frame.
@@ -161,34 +158,40 @@ const clicked = async () => {
 
 As outlined in the overview, OutputStreamNode requires external audio samples. These samples must be written to a ring buffer, and there are several methods to achieve this.
 
+**Note:** The diagrams are simplified for ease of understanding and may differ from the actual implementation.
+
 #### Manual
 
-- This method involves manually writing to the ring buffer. Use the `OutputStreamFactory.createManualBufferNode` method, specifying the number of channels and frames.
-- When the OutputStreamNode is first constructed, the ring buffer is empty. Typically, you need to write to the ring buffer before starting playback. While the node is playing, you must continue writing to the ring buffer to prevent audio frame depletion.
+![manual](./images/manual.drawio.svg)
+
+- This method involves manually writing to the ring buffer. Use the `OutputStreamFactory.createManualBufferNode` method, specifying the number of channels and frames to create an `OutputStreamNode`. The `FrameBufferWriter`, used for writing to the ring buffer, is also returned by this method along with the `OutputStreamNode`.
+- When the `OutputStreamNode` is first constructed, the ring buffer is empty. You must write to the buffer before starting playback to avoid audio gaps. While the node is playing, you must continue writing to the ring buffer to prevent audio frame depletion (which would cause silence).
 - If the audio frames run out, the stream playback continues with the node outputting silence.
-- To stop the stream playback, call the `stop()` method of OutputStreamNode. You can specify the frame at which to stop playback. If you want to play all the written frames, you can specify the total number of written frames, which can be obtained via the FrameBufferWriter.
+- To stop the stream playback, call the `stop()` method of `OutputStreamNode`. You can specify the frame at which to stop playback. For example, calling stop() with a frame count stops playback at that exact frame. If you want to play all the written frames, you can specify the total number of written frames, which can be obtained via the `FrameBufferWriter`.
 
 #### Timed
 
-- This method writes to the ring buffer using a timer initiated on the UI thread. Create it using the `OutputStreamFactory.createTimedBufferNode()` method, specifying the number of channels, timer interval, and the FrameBufferFiller that supplies samples to the buffer.
-- Writing to the ring buffer is handled by the FrameBufferFiller. The timer periodically calls the `fill` method of the FrameBufferFiller, which supplies audio frames via the FrameBufferWriter.
+![timed](./images/timed.drawio.svg)
+
+- This method writes to the ring buffer using a timer initiated on the UI thread. Create it using the `OutputStreamFactory.createTimedBufferNode()` method, specifying the number of channels, the timer interval, and the `FrameBufferFiller` that supplies samples to the buffer.
+- Writing to the ring buffer is handled by the FrameBufferFiller. The timer periodically calls the fill method of the `FrameBufferFiller`, which supplies audio frames via the `FrameBufferWriter`.
 - If the audio frames run out, the stream playback continues with the node outputting silence.
-- If the `fill` method of the FrameBufferFiller returns false, it indicates the end of the audio frame supply. Once OutputStreamNode outputs all the written frames, the stream automatically stops and disconnects.
+- If the fill method of the `FrameBufferFiller` returns false, it indicates that no more audio frames are available. Once `OutputStreamNode` outputs all the written frames, the stream automatically stops and disconnects.
 - Like the Manual method, you can also stop playback at any time using the `stop()` method.
 
 #### Worker
 
+![worker](./images/worker.drawio.svg)
+
 - Similar to the Timed method, this method uses a timer to write to the ring buffer, but the timer runs within a Worker. This approach reduces the impact of UI thread throttling, providing more stable playback.
 - Create it using the `OutputStreamFactory.createWorkerBufferNode()` method.
 - Writing to the ring buffer occurs within the Worker.
-- While the ring buffer writing is still managed by the FrameBufferFiller, the instance must be created and used within the Worker.
-- The instantiation of the FrameBufferFiller implementation class is done within the Worker.
-- You need to create a custom Worker, but helper implementations are available, simplifying this process. Essentially, you only need to specify the FrameBufferFiller implementation class within the Worker.
-- Depending on how you implement the FrameBufferFiller class, you can use the same implementation as the Timed method.
+- While the ring buffer writing is still managed by the `FrameBufferFiller`, the instance must be created and used within the Worker.
+- The `FrameBufferFiller` implementation is instantiated within the Worker.
+- You need to create a custom Worker. However, helper implementations are available to simplify this process. Essentially, you only need to specify the `FrameBufferFiller` implementation class within the Worker.
+- Depending on how you implement the `FrameBufferFiller` class, you can use the same implementation as the Timed method.
 
-</details>
-
-## Buffer Underrun Handling
+### Buffer Underrun Handling
 
 - When the buffer becomes empty, silent audio is output instead of throwing an error.
 - The AudioNode continues to operate and consume CPU resources even during silent output.
