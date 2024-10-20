@@ -5,5 +5,6 @@ export type { FrameBufferFiller } from './frame-buffer/buffer-filler'
 export { StreamNodeFactory,
   type ManualBufferNodeParams,
   type TimedBufferNodeParams,
+  type WorkerBufferNodeParams,
 } from './stream-node-factory'
 export { BufferFillWorker } from './write-strategy/worker/worker'

@@ -76,7 +76,9 @@ class Context {
 /**
  * BufferFillWorker class
  * Manages the communication between the main thread and the worker.
- */
+ *
+ * @template FillerParams - The parameters used by the FrameBufferFiller in the worker.
+*/
 export class BufferFillWorker<FillerParams> {
   private _context: Context | null = null
   private _frameBufferFillerGenerator: new (params: FillerParams) => FrameBufferFiller
@@ -84,7 +86,7 @@ export class BufferFillWorker<FillerParams> {
 
   /**
    * Creates an instance of BufferFillWorker.
-   * @param generator - A generator function to create the FrameBufferFiller instance.
+   * @param generator - A constructor function to create an instance of the FrameBufferFiller class.
    * @param init - An optional initialization function.
    */
   constructor(generator: new (params: FillerParams) => FrameBufferFiller, init?: () => Promise<void>) {
