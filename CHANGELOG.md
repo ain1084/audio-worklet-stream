@@ -4,7 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.X] - XXXX-XX-XX
+## [Unreleased] - 2024-10-20
+
+### Added
+
+- Added `@template` tag in TypeDoc comments for generic type parameters to improve documentation clarity.
+- Added comments to clarify that the `generator` parameter in `BufferFillWorker` constructor is a constructor function, not a regular function.
+
+### Updated
+
+- Restricted the `generator` parameter in `BufferFillWorker` to accept only constructor functions (i.e., `new` keyword) for creating `FrameBufferFiller` instances, ensuring consistent instantiation.
+- Improved TypeDoc comments for the `BufferFillWorker` constructor to specify that the `generator` is a constructor function for creating `FrameBufferFiller` instances.
+
+## [Unreleased] - 2024-10-20
 
 ### Added
 

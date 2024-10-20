@@ -10,38 +10,40 @@ import { WorkerBufferWriteStrategy } from './write-strategy/worker/strategy'
 /**
  * Parameters for creating a manual buffer node.
  */
-export type ManualBufferNodeParams = Readonly<{
+export type ManualBufferNodeParams = {
   /** The number of audio channels. */
-  channelCount: number
+  readonly channelCount: number
   /** The size of the frame buffer in frames. */
-  frameBufferSize: number
-}>
+  readonly frameBufferSize: number
+}
 
 /**
  * Parameters for creating a timed buffer node.
  */
-export type TimedBufferNodeParams = Readonly<{
+export type TimedBufferNodeParams = {
   /** The number of audio channels. */
-  channelCount: number
+  readonly channelCount: number
   /** Optional. The number of chunks in the frame buffer. */
-  frameBufferChunks?: number
+  readonly frameBufferChunks?: number
   /** Optional. The interval in milliseconds for filling the buffer. */
-  fillInterval?: number
+  readonly fillInterval?: number
   /** Optional. The sample rate of the audio context. */
-  sampleRate?: number
-}>
+  readonly sampleRate?: number
+}
 
 /**
  * Parameters for creating a worker buffer node.
- */
-export type WorkerBufferNodeParams<T> = TimedBufferNodeParams & Readonly<{
+ *
+ * @template FillerParams - The parameters used by the FrameBufferFiller in the worker.
+*/
+export type WorkerBufferNodeParams<FillerParams> = TimedBufferNodeParams & {
   /**
-   * Parameters specific to the filler used in the worker.
-   * Note: The values passed as `T` must be serializable (e.g., primitives, arrays, objects).
-   * Non-serializable values such as functions or DOM elements cannot be passed.
-   */
-  fillerParams: T
-}>
+  * Parameters passed to the constructor when the Worker instantiates the FrameBufferFiller implementation class.
+  * Note: The values passed as FillerParams must be serializable (e.g., primitives, arrays, objects).
+  * Non-serializable values such as functions or DOM elements cannot be passed.
+  */
+  readonly fillerParams: FillerParams
+}
 
 /**
  * StreamNodeFactory class
