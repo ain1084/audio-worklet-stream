@@ -142,6 +142,10 @@ The library does not handle the construction or destruction of AudioContext. Whe
 Example:
 
 ```typescript
+import {  StreamNodeFactory,
+  type OutputStreamNode,
+} from '@ain1084/audio-worklet-stream'
+
 let audioContext: AudioContext | null = null
 let factory: StreamNodeFactory | null = null
 
@@ -150,9 +154,28 @@ const clicked = async () => {
     audioContext = new AudioContext()
     factory = await StreamNodeFactory.create(audioContext)
   }
-  const { node, writer } = await factory.createManualBufferNode(
-    { channelCount: 2, frameBufferSize: 4096 }
+
+  // Create manual buffer stream 
+  const channelCount = 1
+  const [node, writer] = await factory.createManualBufferNode(
+    { channelCount, frameBufferSize: 4096 }
   )
+
+  // Write frames
+  writer.write((buffer) => {
+    const samplesPerFrame = channelCount
+    for (let i = 0; i < buffer.length; i += samplePerFrame) {
+      for (let channel = 0; channel < samplesPerFrame; ++channel)
+        buffer[i + channel] = sampleValue /* TODO: Write sample */
+      }
+    }
+    // Return the count of written frames
+    return buffer.length / samplesPerFrame
+  })
+
+  // Play start
+  node.start()
+  audioContext.connect(audioContext.destination)
 }
 ```
 

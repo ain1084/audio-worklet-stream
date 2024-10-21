@@ -1,11 +1,11 @@
 import processor from './output-stream-processor?worker&url'
-import { ManualBufferWriteStrategy } from './write-strategy/manual'
+import { ManualBufferWriteStrategy } from './write-strategy/manual-strategy'
 import { createFillerFrameBufferConfig, createFrameBufferConfig } from './frame-buffer/buffer-config'
 import type { OutputStreamNode } from './output-stream-node'
-import { TimedBufferWriteStrategy } from './write-strategy/timed'
+import { TimedBufferWriteStrategy } from './write-strategy/timed-strategy'
 import type { FrameBufferFiller } from './frame-buffer/buffer-filler'
 import { FrameBufferWriter } from './frame-buffer/buffer-writer'
-import { WorkerBufferWriteStrategy } from './write-strategy/worker/strategy'
+import { WorkerBufferWriteStrategy } from './write-strategy/worker-strategy'
 
 /**
  * Parameters for creating a manual buffer node.

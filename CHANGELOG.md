@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2024-10-22
+
+### Added
+
+- Added more detailed example code to README.md, reflecting a more realistic usage scenario.
+- Added a button in the `example/` (in the example directory, not in README.md) for manual buffering playback.
+
+### Changed
+
+- Renamed strategy implementation files under `write-strategy/` to `XXXX-strategy.ts` to make it clearer that they are strategy implementations.
+
 ## [Unreleased] - 2024-10-20
 
 ### Added
