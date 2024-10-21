@@ -1,6 +1,6 @@
-import { BufferWriteStrategy } from './strategy'
-import { createFrameBufferWriter, FrameBufferConfig } from '../frame-buffer/buffer-config'
-import { FrameBufferWriter } from '../frame-buffer/buffer-writer'
+import type { BufferWriteStrategy } from './strategy'
+import { createFrameBufferWriter, type FrameBufferConfig } from '../frame-buffer/buffer-config'
+import type { FrameBufferWriter } from '../frame-buffer/buffer-writer'
 
 /**
   * ManualBufferWriteStrategy class

@@ -4,6 +4,7 @@ import { StopEvent, StreamNodeFactory,
 import worker from './worker?worker'
 import type { FillerParameters } from './sine-wave-frame-buffer-filler'
 import { SineWaveFrameBufferFiller } from './sine-wave-frame-buffer-filler'
+import { SineWaveGenerator } from './sine-wave-generator'
 
 class Main {
   private factory: StreamNodeFactory | null = null
@@ -13,44 +14,64 @@ class Main {
   constructor() {
     this.outputDiv = document.getElementById('output')!
 
-    document.getElementById('startTimerButton')!.addEventListener('click', async () => {
-      await this.streamNode?.stop()
-      this.streamNode = null
-      await this.prepareStreamFactory()
-      if (!this.factory) {
-        throw new Error('Invalid factory state')
-      }
+    this.addCommand('startManualButton', async () => {
       const frequencies = [440]
-      this.streamNode = await this.factory.createTimedBufferNode(
+      const sampleRate = this.factory!.audioContext.sampleRate
+      const generators = frequencies.map((frequency) => {
+        return new SineWaveGenerator({ frequency, sampleRate })
+      })
+      const frameBufferSize = this.factory!.audioContext.sampleRate
+      const [node, writer] = await this.factory!.createManualBufferNode({
+        channelCount: frequencies.length, frameBufferSize })
+      writer.write((buffer) => {
+        const samplesPerFrame = generators.length
+        for (let i = 0; i < buffer.length; i += samplesPerFrame) {
+          generators.forEach((generator, channelIndex) => {
+            buffer[i + channelIndex] = generator.nextValue() * 0.3
+          })
+        }
+        return buffer.length / samplesPerFrame
+      })
+      return node
+    })
+
+    this.addCommand('startTimerButton', async () => {
+      const frequencies = [440]
+      return this.factory!.createTimedBufferNode(
         new SineWaveFrameBufferFiller(
-          { sampleRate: this.factory.audioContext.sampleRate, frequencies },
+          { sampleRate: this.factory!.audioContext.sampleRate, frequencies },
         ),
         { channelCount: frequencies.length },
       )
-      this.startStreamNode()
     })
 
-    document.getElementById('startWorkerButton')!.addEventListener('click', async () => {
-      await this.streamNode?.stop()
-      this.streamNode = null
-      await this.prepareStreamFactory()
-      if (!this.factory) {
-        throw new Error('Invalid factory state')
-      }
+    this.addCommand('startWorkerButton', async () => {
       const frequencies = [440, 431]
-      this.streamNode = await this.factory.createWorkerBufferNode<FillerParameters>(
+      return this.factory!.createWorkerBufferNode<FillerParameters>(
         worker,
         { channelCount: frequencies.length,
-          fillerParams: { sampleRate: this.factory.audioContext.sampleRate, frequencies },
+          fillerParams: { sampleRate: this.factory!.audioContext.sampleRate, frequencies },
         },
       )
-      this.startStreamNode()
     })
 
     const stopButton = document.getElementById('stopButton')!
     stopButton.addEventListener('click', async () => {
       await this.streamNode?.stop()
       this.streamNode = null
+    })
+  }
+
+  private addCommand(id: string, commandProc: () => Promise<OutputStreamNode | null>) {
+    document.getElementById(id)!.addEventListener('click', async () => {
+      await this.streamNode?.stop()
+      this.streamNode = null
+      await this.prepareStreamFactory()
+      if (!this.factory) {
+        throw new Error('Invalid factory state')
+      }
+      this.streamNode = await commandProc()
+      this.startStreamNode()
     })
   }
 
@@ -65,8 +86,8 @@ class Main {
     if (!this.streamNode) {
       throw new Error('Invalid streamNode state')
     }
-    this.streamNode.addEventListener(StopEvent.type, () => {
-      this.outputDiv.textContent = 'Stopped'
+    this.streamNode.addEventListener(StopEvent.type, (ev) => {
+      this.outputDiv.textContent = `Stopped (${ev.stoppedAtFrame} frames)`
       this.streamNode = null
     }, { once: true })
     this.streamNode.connect(this.streamNode.context.destination)
