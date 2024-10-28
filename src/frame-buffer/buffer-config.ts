@@ -1,5 +1,4 @@
-import { FrameBuffer } from './buffer'
-import { FrameBufferWriter } from './buffer-writer'
+import { createArrayBufferViews } from '@ain1084/array-buffer-partitioner'
 
 /**
  * The default number of chunks in the frame buffer when
@@ -75,31 +74,19 @@ export type FillerFrameBufferConfig = FrameBufferConfig & Readonly<{
 }>
 
 /**
- * Creates a FrameBufferWriter instance.
- * @param config - The configuration for the FrameBuffer.
- * @returns A new instance of FrameBufferWriter.
- */
-export const createFrameBufferWriter = (config: FrameBufferConfig): FrameBufferWriter => {
-  return new FrameBufferWriter(
-    new FrameBuffer(config.sampleBuffer, config.samplesPerFrame),
-    config.usedFramesInBuffer, config.totalWriteFrames,
-  )
-}
-
-/**
  * Creates a FrameBufferConfig instance.
  * @param params - The parameters for the FrameBuffer.
  * @returns A new instance of FrameBufferConfig.
  */
 export const createFrameBufferConfig = (params: FrameBufferParams): FrameBufferConfig => {
   return {
-    sampleBuffer: new Float32Array(
-      new SharedArrayBuffer(params.frameBufferSize * params.channelCount * Float32Array.BYTES_PER_ELEMENT),
-    ),
+    ...createArrayBufferViews(SharedArrayBuffer, {
+      sampleBuffer: [Float32Array, params.frameBufferSize * params.channelCount],
+      usedFramesInBuffer: [Uint32Array, 1],
+      totalReadFrames: [BigUint64Array, 1],
+      totalWriteFrames: [BigUint64Array, 1],
+    }),
     samplesPerFrame: params.channelCount,
-    usedFramesInBuffer: new Uint32Array(new SharedArrayBuffer(Uint32Array.BYTES_PER_ELEMENT)),
-    totalReadFrames: new BigUint64Array(new SharedArrayBuffer(BigUint64Array.BYTES_PER_ELEMENT)),
-    totalWriteFrames: new BigUint64Array(new SharedArrayBuffer(BigUint64Array.BYTES_PER_ELEMENT)),
   }
 }
 

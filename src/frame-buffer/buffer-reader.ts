@@ -1,4 +1,5 @@
 import { FrameBuffer } from './buffer'
+import { FrameBufferConfig } from './buffer-config'
 
 /**
  * FrameBufferReader class
@@ -12,15 +13,18 @@ export class FrameBufferReader {
   private _index: number = 0
 
   /**
+   * @internal
    * Creates an instance of FrameBufferReader.
-   * @param frameBuffer - The shared buffer to read from.
-   * @param usedFramesInBuffer - The Uint32Array tracking the usage of the buffer.
-   * @param totalFrames - The BigUint64Array tracking the total frames read from the buffer.
+   * @param config - The configuration object containing:
+   *   - `sampleBuffer`: The shared buffer to read audio data frames from.
+   *   - `samplesPerFrame`: The number of samples per frame.
+   *   - `usedFramesInBuffer`: A Uint32Array tracking the usage of frames in the buffer.
+   *   - `totalReadFrames`: A BigUint64Array tracking the total frames read from the buffer.
    */
-  constructor(frameBuffer: FrameBuffer, usedFramesInBuffer: Uint32Array, totalFrames: BigUint64Array) {
-    this._frameBuffer = frameBuffer
-    this._usedFramesInBuffer = usedFramesInBuffer
-    this._totalFrames = totalFrames
+  constructor(config: FrameBufferConfig) {
+    this._frameBuffer = new FrameBuffer(config.sampleBuffer, config.samplesPerFrame)
+    this._usedFramesInBuffer = config.usedFramesInBuffer
+    this._totalFrames = config.totalReadFrames
   }
 
   /**

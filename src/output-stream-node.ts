@@ -1,5 +1,4 @@
 import type { MessageToProcessor, MessageToAudioNode } from './output-message'
-import type { OutputStreamProcessorOptions } from './output-stream-processor'
 import { PROCESSOR_NAME } from './constants'
 import { StopEvent, UnderrunEvent } from './events'
 import { BufferWriteStrategy } from './write-strategy/strategy'
@@ -41,13 +40,9 @@ export class OutputStreamNode extends AudioWorkletNode {
     bufferConfig: FrameBufferConfig,
     strategy: BufferWriteStrategy,
   ) {
-    const processorOptions: OutputStreamProcessorOptions = {
-      ...bufferConfig,
-      totalFrames: bufferConfig.totalReadFrames,
-    }
     super(baseAudioContext, PROCESSOR_NAME, {
       outputChannelCount: [bufferConfig.samplesPerFrame],
-      processorOptions,
+      processorOptions: bufferConfig,
     })
     this._strategy = strategy
     this._totalWriteFrames = bufferConfig.totalWriteFrames
@@ -56,14 +51,15 @@ export class OutputStreamNode extends AudioWorkletNode {
   }
 
   /**
+   * @internal
    * Creates an instance of OutputStreamNode.
    * @param audioContext - The audio context to use.
-   * @param info - The configuration for the buffer.
+   * @param config - The configuration for the buffer.
    * @param strategy - The strategy for writing to the buffer.
    * @returns A promise that resolves to an instance of OutputStreamNode.
    */
-  public static async create(audioContext: BaseAudioContext, info: FrameBufferConfig, strategy: BufferWriteStrategy): Promise<OutputStreamNode> {
-    const node = new OutputStreamNode(audioContext, info, strategy)
+  public static async create(audioContext: BaseAudioContext, config: FrameBufferConfig, strategy: BufferWriteStrategy): Promise<OutputStreamNode> {
+    const node = new OutputStreamNode(audioContext, config, strategy)
     if (!(await strategy.onInit(node))) {
       throw new Error('Failed to onInit.')
     }

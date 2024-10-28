@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4] - 2024-10-29
+
+### Summary of Changes
+
+- **Refactoring**: Simplified code structure by removing redundant functions and configurations
+- **Internal Use Adjustment**: Added `@internal` tags to constructors to indicate internal-only usage
+- **Typedoc Enhancements**: Added documentation links to improve cross-referencing in the docs
+
+### Detailed Changes
+
+#### Improvements
+
+- Updated constructors in `FrameBufferWriter` and `FrameBufferReader` to take `FrameBufferConfig` as a parameter, simplifying configuration handling
+- Added `{@link}` tags to `xxxParams` types in `StreamNodeFactory` to link to related functions in the documentation
+- Added `@internal` tags to constructors in `FrameBufferWriter` and `FrameBufferReader` to clarify internal use
+- Implemented `@ain1084/array-buffer-partitioner` to create `SharedArrayBuffer`, optimizing memory partitioning
+
+#### Removals
+
+- Removed `createFrameBufferWriter` and `createFrameBufferReader` functions (made redundant by direct use of `FrameBufferConfig` parameter)
+- Removed `OutputStreamProcessorOptions` (no longer necessary as `FrameBufferConfig` is passed directly)
+
 ## [Unreleased] - 2024-10-22
 
 ### Added

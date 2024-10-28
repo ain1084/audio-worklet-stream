@@ -9,6 +9,7 @@ import { WorkerBufferWriteStrategy } from './write-strategy/worker-strategy'
 
 /**
  * Parameters for creating a manual buffer node.
+ * Used in the {@link StreamNodeFactory.createManualBufferNode} function.
  */
 export type ManualBufferNodeParams = {
   /** The number of audio channels. */
@@ -19,6 +20,7 @@ export type ManualBufferNodeParams = {
 
 /**
  * Parameters for creating a timed buffer node.
+ * Used in the {@link StreamNodeFactory.createTimedBufferNode} function.
  */
 export type TimedBufferNodeParams = {
   /** The number of audio channels. */
@@ -33,9 +35,10 @@ export type TimedBufferNodeParams = {
 
 /**
  * Parameters for creating a worker buffer node.
+ * Used in the {@link StreamNodeFactory.createWorkerBufferNode} function.
  *
  * @template FillerParams - The parameters used by the FrameBufferFiller in the worker.
-*/
+ */
 export type WorkerBufferNodeParams<FillerParams> = TimedBufferNodeParams & {
   /**
   * Parameters passed to the constructor when the Worker instantiates the FrameBufferFiller implementation class.

@@ -1,4 +1,5 @@
 import { FrameBuffer } from './buffer'
+import { FrameBufferConfig } from './buffer-config'
 
 /**
  * FrameBufferWriter class
@@ -12,15 +13,18 @@ export class FrameBufferWriter {
   private _index: number = 0
 
   /**
+   * @internal
    * Creates an instance of FrameBufferWriter.
-   * @param frameBuffer - The shared buffer to write to.
-   * @param usedFramesInBuffer - The Uint32Array tracking the usage of the buffer.
-   * @param totalFrames - The BigUint64Array tracking the total frames written to the buffer.
+   * @param config - The configuration object containing:
+   *   - `sampleBuffer`: The shared buffer to write audio data frames.
+   *   - `samplesPerFrame`: The number of samples per frame.
+   *   - `usedFramesInBuffer`: A Uint32Array tracking the usage of frames in the buffer.
+   *   - `totalWriteFrames`: A BigUint64Array tracking the total frames written to the buffer.
    */
-  constructor(frameBuffer: FrameBuffer, usedFramesInBuffer: Uint32Array, totalFrames: BigUint64Array) {
-    this._frameBuffer = frameBuffer
-    this._usedFramesInBuffer = usedFramesInBuffer
-    this._totalFrames = totalFrames
+  constructor(config: FrameBufferConfig) {
+    this._frameBuffer = new FrameBuffer(config.sampleBuffer, config.samplesPerFrame)
+    this._usedFramesInBuffer = config.usedFramesInBuffer
+    this._totalFrames = config.totalWriteFrames
   }
 
   /**
