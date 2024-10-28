@@ -1,6 +1,6 @@
 import type { BufferWriteStrategy } from './strategy'
-import { createFrameBufferWriter, type FrameBufferConfig } from '../frame-buffer/buffer-config'
-import type { FrameBufferWriter } from '../frame-buffer/buffer-writer'
+import type { FrameBufferConfig } from '../frame-buffer/buffer-config'
+import { FrameBufferWriter } from '../frame-buffer/buffer-writer'
 
 /**
   * ManualBufferWriteStrategy class
@@ -14,7 +14,7 @@ export class ManualBufferWriteStrategy implements BufferWriteStrategy {
    * @param config - The configuration for the frame buffer.
    */
   constructor(config: FrameBufferConfig) {
-    this._writer = createFrameBufferWriter(config)
+    this._writer = new FrameBufferWriter(config)
   }
 
   /**

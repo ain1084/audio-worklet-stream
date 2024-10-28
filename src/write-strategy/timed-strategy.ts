@@ -1,6 +1,6 @@
 import type { BufferWriteStrategy } from './strategy'
-import { createFrameBufferWriter, type FillerFrameBufferConfig } from '../frame-buffer/buffer-config'
-import type { FrameBufferWriter } from '../frame-buffer/buffer-writer'
+import type { FillerFrameBufferConfig } from '../frame-buffer/buffer-config'
+import { FrameBufferWriter } from '../frame-buffer/buffer-writer'
 import type { FrameBufferFiller } from '../frame-buffer/buffer-filler'
 import type { OutputStreamNode } from '../output-stream-node'
 
@@ -63,7 +63,7 @@ export class TimedBufferWriteStrategy implements BufferWriteStrategy {
    * @param filler - The FrameBufferFiller instance.
    */
   constructor(config: FillerFrameBufferConfig, filler: FrameBufferFiller) {
-    this._writer = createFrameBufferWriter(config)
+    this._writer = new FrameBufferWriter(config)
     this._filler = filler
     this._interval = config.fillInterval
     this._isContinuePlayback = this._filler.fill(this._writer)

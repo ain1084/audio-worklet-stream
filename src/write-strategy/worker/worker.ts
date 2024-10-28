@@ -1,6 +1,6 @@
-import { createFrameBufferWriter, FillerFrameBufferConfig } from '../../frame-buffer/buffer-config'
+import type { FillerFrameBufferConfig } from '../../frame-buffer/buffer-config'
 import type { FrameBufferFiller } from '../../frame-buffer/buffer-filler'
-import type { FrameBufferWriter } from '../../frame-buffer/buffer-writer'
+import { FrameBufferWriter } from '../../frame-buffer/buffer-writer'
 import { MessageToStrategy, MessageToWorker } from './message'
 
 /**
@@ -20,7 +20,7 @@ class Context {
    * @param frameBufferFiller - The FrameBufferFiller instance.
    */
   constructor(config: FillerFrameBufferConfig, frameBufferFiller: FrameBufferFiller) {
-    this._frameBufferWriter = createFrameBufferWriter(config)
+    this._frameBufferWriter = new FrameBufferWriter(config)
     this._frameBufferFiller = frameBufferFiller
     this._fillInterval = config.fillInterval
     this._isContinuePlayback = this.fillBuffer()

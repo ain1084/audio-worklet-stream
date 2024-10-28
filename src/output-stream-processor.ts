@@ -1,28 +1,7 @@
 import { FrameBufferReader } from './frame-buffer/buffer-reader'
 import { PROCESSOR_NAME } from './constants'
 import type { MessageToAudioNode, MessageToProcessor } from './output-message'
-import { FrameBuffer } from './frame-buffer/buffer'
-
-/**
- * Options for the OutputStreamProcessor
- * @property sampleBuffer - The shared buffer for audio data frames.
- * @property samplesPerFrame - The number of samples per frame.
- * @property usedFramesInBuffer - The usage count of the frames in the buffer.
- * @property totalFrames - The current position in the buffer, in frames.
- */
-export type OutputStreamProcessorOptions = Readonly<{
-  sampleBuffer: Float32Array
-  samplesPerFrame: number
-  usedFramesInBuffer: Uint32Array
-  totalFrames: BigUint64Array
-}>
-
-const createFrameBufferReader = (options: OutputStreamProcessorOptions) => {
-  return new FrameBufferReader(
-    new FrameBuffer(options.sampleBuffer, options.samplesPerFrame),
-    options.usedFramesInBuffer, options.totalFrames,
-  )
-}
+import type { FrameBufferConfig } from './frame-buffer/buffer-config'
 
 /**
  * OutputStreamProcessor class
@@ -41,7 +20,7 @@ class OutputStreamProcessor extends AudioWorkletProcessor {
    */
   constructor(options: AudioWorkletNodeOptions) {
     super()
-    this._frameReader = createFrameBufferReader(options.processorOptions as OutputStreamProcessorOptions)
+    this._frameReader = new FrameBufferReader(options.processorOptions as FrameBufferConfig)
     this.port.onmessage = this.handleMessage.bind(this)
   }
 
