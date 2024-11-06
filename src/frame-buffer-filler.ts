@@ -1,4 +1,4 @@
-import type { FrameBufferWriter } from './buffer-writer'
+import type { FrameBufferWriter } from '@ain1084/audio-frame-buffer'
 
 /**
  * FrameBufferFiller interface
@@ -7,7 +7,7 @@ import type { FrameBufferWriter } from './buffer-writer'
 export interface FrameBufferFiller {
   /**
    * Fill the buffer with audio frames using the provided writer.
-   * @param writer - An instance of FrameBufferWriter used to write audio frames to the buffer.
+   * @param writer - An instance of {@link https://ain1084.github.io/audio-frame-buffer/classes/FrameBufferWriter.html | FrameBufferWriter} used to write audio frames to the buffer.
    * @returns A boolean indicating whether to continue playback.
    */
   fill(writer: FrameBufferWriter): boolean

@@ -1,6 +1,5 @@
 import type { BufferWriteStrategy } from './strategy'
-import type { FrameBufferConfig } from '../frame-buffer/buffer-config'
-import { FrameBufferWriter } from '../frame-buffer/buffer-writer'
+import { type FrameBufferContext, FrameBufferWriter } from '@ain1084/audio-frame-buffer'
 
 /**
   * ManualBufferWriteStrategy class
@@ -11,10 +10,10 @@ export class ManualBufferWriteStrategy implements BufferWriteStrategy {
 
   /**
    * Creates an instance of ManualBufferWriteStrategy.
-   * @param config - The configuration for the frame buffer.
+   * @param bufferContext - The configuration for the frame buffer.
    */
-  constructor(config: FrameBufferConfig) {
-    this._writer = new FrameBufferWriter(config)
+  constructor(bufferContext: FrameBufferContext) {
+    this._writer = new FrameBufferWriter(bufferContext)
   }
 
   /**

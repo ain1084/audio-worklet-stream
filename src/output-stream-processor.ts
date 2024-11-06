@@ -1,7 +1,6 @@
-import { FrameBufferReader } from './frame-buffer/buffer-reader'
+import { FrameBufferReader, type FrameBufferContext } from '@ain1084/audio-frame-buffer'
 import { PROCESSOR_NAME } from './constants'
 import type { MessageToAudioNode, MessageToProcessor } from './output-message'
-import type { FrameBufferConfig } from './frame-buffer/buffer-config'
 
 /**
  * OutputStreamProcessor class
@@ -20,7 +19,7 @@ class OutputStreamProcessor extends AudioWorkletProcessor {
    */
   constructor(options: AudioWorkletNodeOptions) {
     super()
-    this._frameReader = new FrameBufferReader(options.processorOptions as FrameBufferConfig)
+    this._frameReader = new FrameBufferReader(options.processorOptions as FrameBufferContext)
     this.port.onmessage = this.handleMessage.bind(this)
   }
 
@@ -79,13 +78,13 @@ class OutputStreamProcessor extends AudioWorkletProcessor {
   process(_inputs: Float32Array[][], outputs: Float32Array[][]): boolean {
     const output = outputs[0]
     const samplesPerFrame = output.length
-    const readFrames = this._frameReader.read((buffer, offset) => {
-      const bufferFrameCount = buffer.length / samplesPerFrame
+    const readFrames = this._frameReader.read((segment, offset) => {
+      const bufferFrameCount = segment.frameCount
       const frameCount = Math.min(bufferFrameCount, output[0].length - offset)
       // Deinterleaves interleaved audio frame data and writes it to the output.
       output.forEach((outputChannel, channelIndex) => {
         for (let i = channelIndex, j = 0; j < frameCount; i += samplesPerFrame, ++j) {
-          outputChannel[offset + j] = buffer[i]
+          outputChannel[offset + j] = segment.samples[i]
         }
       })
       return frameCount
