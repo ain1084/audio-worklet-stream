@@ -2,7 +2,7 @@ import type { MessageToProcessor, MessageToAudioNode } from './output-message'
 import { PROCESSOR_NAME } from './constants'
 import { StopEvent, UnderrunEvent } from './events'
 import { BufferWriteStrategy } from './write-strategy/strategy'
-import { FrameBufferConfig } from './frame-buffer/buffer-config'
+import { FrameBufferContext } from '@ain1084/audio-frame-buffer'
 
 /**
  * Stream state
@@ -32,21 +32,21 @@ export class OutputStreamNode extends AudioWorkletNode {
   /**
    * Creates an instance of OutputStreamNode.
    * @param baseAudioContext - The audio context to use.
-   * @param bufferConfig - The configuration for the buffer.
+   * @param bufferContext - The context for the audio frame buffer.
    * @param strategy - The strategy for writing to the buffer.
    */
   private constructor(
     baseAudioContext: BaseAudioContext,
-    bufferConfig: FrameBufferConfig,
+    bufferContext: FrameBufferContext,
     strategy: BufferWriteStrategy,
   ) {
     super(baseAudioContext, PROCESSOR_NAME, {
-      outputChannelCount: [bufferConfig.samplesPerFrame],
-      processorOptions: bufferConfig,
+      outputChannelCount: [bufferContext.samplesPerFrame],
+      processorOptions: bufferContext,
     })
     this._strategy = strategy
-    this._totalWriteFrames = bufferConfig.totalWriteFrames
-    this._totalReadFrames = bufferConfig.totalReadFrames
+    this._totalWriteFrames = bufferContext.totalWriteFrames
+    this._totalReadFrames = bufferContext.totalReadFrames
     this.port.onmessage = this.handleMessage.bind(this)
   }
 
@@ -54,12 +54,12 @@ export class OutputStreamNode extends AudioWorkletNode {
    * @internal
    * Creates an instance of OutputStreamNode.
    * @param audioContext - The audio context to use.
-   * @param config - The configuration for the buffer.
+   * @param context - The context for the audio frame buffer.
    * @param strategy - The strategy for writing to the buffer.
    * @returns A promise that resolves to an instance of OutputStreamNode.
    */
-  public static async create(audioContext: BaseAudioContext, config: FrameBufferConfig, strategy: BufferWriteStrategy): Promise<OutputStreamNode> {
-    const node = new OutputStreamNode(audioContext, config, strategy)
+  public static async create(audioContext: BaseAudioContext, context: FrameBufferContext, strategy: BufferWriteStrategy): Promise<OutputStreamNode> {
+    const node = new OutputStreamNode(audioContext, context, strategy)
     if (!(await strategy.onInit(node))) {
       throw new Error('Failed to onInit.')
     }

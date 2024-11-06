@@ -1,6 +1,6 @@
-import type { FillerFrameBufferConfig } from '../../frame-buffer/buffer-config'
-import type { FrameBufferFiller } from '../../frame-buffer/buffer-filler'
-import { FrameBufferWriter } from '../../frame-buffer/buffer-writer'
+import type { FillerFrameBufferContext } from '../../filler-frame-buffer-context'
+import type { FrameBufferFiller } from '../../frame-buffer-filler'
+import { FrameBufferWriter } from '@ain1084/audio-frame-buffer'
 import { MessageToStrategy, MessageToWorker } from './message'
 
 /**
@@ -16,13 +16,13 @@ class Context {
 
   /**
    * Creates an instance ofContext.
-   * @param config - The configuration for the filler frame buffer.
+   * @param context - The configuration for the filler frame buffer.
    * @param frameBufferFiller - The FrameBufferFiller instance.
    */
-  constructor(config: FillerFrameBufferConfig, frameBufferFiller: FrameBufferFiller) {
-    this._frameBufferWriter = new FrameBufferWriter(config)
+  constructor(context: FillerFrameBufferContext, frameBufferFiller: FrameBufferFiller) {
+    this._frameBufferWriter = new FrameBufferWriter(context)
     this._frameBufferFiller = frameBufferFiller
-    this._fillInterval = config.fillInterval
+    this._fillInterval = context.fillInterval
     this._isContinuePlayback = this.fillBuffer()
   }
 
@@ -117,15 +117,15 @@ export class BufferFillWorker<FillerParams> {
 
   /**
    * Initializes the worker context.
-   * @param config - The configuration for the filler frame buffer.
+   * @param bufferContext - The configuration for the filler frame buffer.
    * @param params - The parameters for the FrameBufferFiller.
    */
-  private async init(config: FillerFrameBufferConfig, params: FillerParams) {
+  private async init(bufferContext: FillerFrameBufferContext, params: FillerParams) {
     if (this._context) {
       throw new Error('Error: Context is already created.')
     }
     await this._init?.()
-    this._context = new Context(config, new this._frameBufferFillerGenerator(params))
+    this._context = new Context(bufferContext, new this._frameBufferFillerGenerator(params))
     self.postMessage({ type: 'init-done' } as MessageToStrategy)
   }
 

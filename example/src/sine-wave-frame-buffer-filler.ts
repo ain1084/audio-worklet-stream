@@ -15,14 +15,13 @@ export class SineWaveFrameBufferFiller implements FrameBufferFiller {
   }
 
   fill(writer: FrameBufferWriter): boolean {
-    const samplesPerFrame = this._generators.length
-    writer.write((buffer) => {
-      for (let i = 0; i < buffer.length; i += samplesPerFrame) {
+    writer.write((segment) => {
+      for (let i = 0; i < segment.frameCount; i++) {
         this._generators.forEach((generator, channelIndex) => {
-          buffer[i + channelIndex] = generator.nextValue() * 0.3
+          segment.set(i, channelIndex, generator.nextValue() * 0.3)
         })
       }
-      return buffer.length / samplesPerFrame
+      return segment.frameCount
     })
     return true
   }

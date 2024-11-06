@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2024-11-07
+
+### Changed
+
+- Refactored FrameBuffer implementations into a separate package, @ain1084/audio-frame-buffer. Renamed several files for clarity.
+- Updated the FrameBufferWriter callback function to receive FrameBufferSegment instead of Float32Array. This change is not backward-compatible, so any usage of FrameBufferFiller will require changes. For accessing Float32Array directly as before, you can refer to the samples property of FrameBufferSegment to minimize the changes needed.
+
 ## [1.0.5] - 2024-10-30
 
 ### Fixed

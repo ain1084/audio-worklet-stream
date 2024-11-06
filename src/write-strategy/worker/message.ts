@@ -1,4 +1,4 @@
-import type { FillerFrameBufferConfig } from '../../frame-buffer/buffer-config'
+import type { FillerFrameBufferContext } from '../../filler-frame-buffer-context'
 
 /**
  * Message sent from the main thread to the worker.
@@ -6,7 +6,7 @@ import type { FillerFrameBufferConfig } from '../../frame-buffer/buffer-config'
  * @typeParam FillerParams - The type of the parameters for the FrameBufferFiller.
  *
  * For 'init' messages:
- * @property config - The configuration for the filler frame buffer.
+ * @property context - The context for the filler frame buffer.
  * @property fillerParams - The parameters for the FrameBufferFiller.
  *
  * For 'start' messages:
@@ -23,7 +23,7 @@ import type { FillerFrameBufferConfig } from '../../frame-buffer/buffer-config'
  * ```
  */
 export type MessageToWorker<FillerParams> =
-  | { type: 'init', config: FillerFrameBufferConfig, fillerParams: FillerParams }
+  | { type: 'init', config: FillerFrameBufferContext, fillerParams: FillerParams }
   | { type: 'start' }
   | { type: 'stop' }
 

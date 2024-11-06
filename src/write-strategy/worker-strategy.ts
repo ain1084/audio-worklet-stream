@@ -1,18 +1,18 @@
 import type { BufferWriteStrategy } from './strategy'
-import type { FillerFrameBufferConfig } from '../frame-buffer/buffer-config'
+import type { FillerFrameBufferContext } from '../filler-frame-buffer-context'
 import type { MessageToStrategy, MessageToWorker } from './worker/message'
 import type { OutputStreamNode } from '../output-stream-node'
 
 /**
  * Parameters for creating a PlayContext.
  * @property node - The OutputStreamNode instance.
- * @property config - The FillerFrameBufferConfig instance.
+ * @property context - The FillerFrameBufferContext instance.
  * @property workerConstructor - The constructor for the Worker.
  * @property fillerParam - The parameters for the FrameBufferFiller.
  */
 type PlayerContextParams<FillerParams> = Readonly<{
   node: OutputStreamNode
-  config: FillerFrameBufferConfig
+  context: FillerFrameBufferContext
   workerConstructor: new () => Worker
   fillerParam: FillerParams
 }>
@@ -23,7 +23,7 @@ type PlayerContextParams<FillerParams> = Readonly<{
  */
 class Context<FillerParams> {
   private readonly _node: OutputStreamNode
-  private readonly _config: FillerFrameBufferConfig
+  private readonly _bufferContext: FillerFrameBufferContext
   private readonly _fillerParam: FillerParams
   private readonly _worker: Worker
 
@@ -33,7 +33,7 @@ class Context<FillerParams> {
    */
   private constructor(params: PlayerContextParams<FillerParams>) {
     this._node = params.node
-    this._config = params.config
+    this._bufferContext = params.context
     this._worker = new params.workerConstructor()
     this._fillerParam = params.fillerParam
     this._worker.onmessage = this.handleWorkerMessage.bind(this)
@@ -68,7 +68,7 @@ class Context<FillerParams> {
     return new Promise<void>((resolve) => {
       const message: MessageToWorker<FillerParams> = {
         type: 'init',
-        config: this._config,
+        config: this._bufferContext,
         fillerParams: this._fillerParam,
       }
       this._worker.postMessage(message)
@@ -111,12 +111,12 @@ export class WorkerBufferWriteStrategy<FillerParam> implements BufferWriteStrate
 
   /**
    * Creates an instance of WorkerBufferWriteStrategy.
-   * @param config - The configuration for the filler frame buffer.
+   * @param bufferContext - The context for the filler frame buffer.
    * @param workerConstructor - The constructor for the Worker.
    * @param fillerParam - The parameters for the FrameBufferFiller.
    */
-  constructor(config: FillerFrameBufferConfig, workerConstructor: new () => Worker, fillerParam: FillerParam) {
-    this._createPlayContext = (node: OutputStreamNode) => Context.create<FillerParam>({ node, config, workerConstructor, fillerParam })
+  constructor(bufferContext: FillerFrameBufferContext, workerConstructor: new () => Worker, fillerParam: FillerParam) {
+    this._createPlayContext = (node: OutputStreamNode) => Context.create<FillerParam>({ node, context: bufferContext, workerConstructor, fillerParam })
   }
 
   /**

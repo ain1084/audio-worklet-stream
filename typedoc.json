@@ -4,5 +4,6 @@
   "excludePrivate": true,
   "excludeProtected": true,
   "includeVersion": true,
-  "hideGenerator": true
+  "hideGenerator": true,
+  "exclude": [ "**/dist/**/*"]
 }

@@ -1,7 +1,7 @@
 export { StopEvent, UnderrunEvent } from './events'
 export type { OutputStreamNode } from './output-stream-node'
-export type { FrameBufferWriter } from './frame-buffer/buffer-writer'
-export type { FrameBufferFiller } from './frame-buffer/buffer-filler'
+export type { FrameBufferWriter } from '@ain1084/audio-frame-buffer'
+export type { FrameBufferFiller } from './frame-buffer-filler'
 export { StreamNodeFactory,
   type ManualBufferNodeParams,
   type TimedBufferNodeParams,

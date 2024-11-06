@@ -1,7 +1,7 @@
 import type { BufferWriteStrategy } from './strategy'
-import type { FillerFrameBufferConfig } from '../frame-buffer/buffer-config'
-import { FrameBufferWriter } from '../frame-buffer/buffer-writer'
-import type { FrameBufferFiller } from '../frame-buffer/buffer-filler'
+import type { FillerFrameBufferContext } from '../filler-frame-buffer-context'
+import { FrameBufferWriter } from '@ain1084/audio-frame-buffer'
+import type { FrameBufferFiller } from '../frame-buffer-filler'
 import type { OutputStreamNode } from '../output-stream-node'
 
 /**
@@ -59,13 +59,13 @@ export class TimedBufferWriteStrategy implements BufferWriteStrategy {
 
   /**
    * Creates an instance of TimedBufferWriteStrategy.
-   * @param config - The configuration for the filler frame buffer.
+   * @param bufferContext - The configuration for the filler frame buffer.
    * @param filler - The FrameBufferFiller instance.
    */
-  constructor(config: FillerFrameBufferConfig, filler: FrameBufferFiller) {
-    this._writer = new FrameBufferWriter(config)
+  constructor(bufferContext: FillerFrameBufferContext, filler: FrameBufferFiller) {
+    this._writer = new FrameBufferWriter(bufferContext)
     this._filler = filler
-    this._interval = config.fillInterval
+    this._interval = bufferContext.fillInterval
     this._isContinuePlayback = this._filler.fill(this._writer)
   }
 
