@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.2] - 2026-01-20
+
+### Changed
+
+- Updated devDependencies to latest versions:
+  - @stylistic/eslint-plugin: 2.10.1 → 5.7.0
+  - @types/audioworklet: 0.0.64 → 0.0.92
+  - @types/node: 22.9.0 → 25.0.9
+  - @typescript-eslint/parser: 8.13.0 → 8.53.0
+  - eslint: 9.14.0 → 9.39.2
+  - globals: 15.12.0 → 17.0.0
+  - typedoc: 0.26.11 → 0.28.16
+  - typescript: 5.6.3 → 5.9.3
+  - typescript-eslint: 8.13.0 → 8.53.0
+  - vite: 5.4.10 → 7.3.1
+
+### Fixed
+
+- Fixed operator-linebreak lint errors in output-message.ts
+- Updated eslint-stylistic config from deprecated 'recommended-flat' to 'recommended'
+
+
+
 ## [2.0.1] - 2024-11-08
 
 ### Changed
