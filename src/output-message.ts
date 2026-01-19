@@ -16,9 +16,9 @@
  * const message: MessageToAudioNode = { type: 'underrun', underrunFrameCount: 256 };
  * ```
  */
-export type MessageToAudioNode =
-  | { type: 'stop', totalProcessedFrames: bigint }
-  | { type: 'underrun', underrunFrameCount: number }
+export type MessageToAudioNode
+  = { type: 'stop', totalProcessedFrames: bigint }
+    | { type: 'underrun', underrunFrameCount: number }
 
 /**
  * Messages sent from the main thread to the processor.
@@ -33,5 +33,5 @@ export type MessageToAudioNode =
  * const message: MessageToProcessor = { type: 'stop', framePosition: 1000n };
  * ```
  */
-export type MessageToProcessor =
-  | { type: 'stop', framePosition: bigint }
+export type MessageToProcessor
+  = { type: 'stop', framePosition: bigint }

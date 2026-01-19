@@ -8,15 +8,15 @@ import { FrameBufferContext } from '@ain1084/audio-frame-buffer'
  * Stream state
  * Represents the different states of the stream.
  */
-export type StreamState =
+export type StreamState
   // Initial state where playback can start
-  | 'ready'
+  = | 'ready'
     // State where playback has started
-  | 'started'
-   // State where playback is stopping
-  | 'stopping'
+    | 'started'
+    // State where playback is stopping
+    | 'stopping'
     // State where playback has stopped
-  | 'stopped'
+    | 'stopped'
 
 /**
  * OutputStreamNode class

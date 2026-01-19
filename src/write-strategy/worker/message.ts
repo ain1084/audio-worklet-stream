@@ -22,10 +22,10 @@ import type { FillerFrameBufferContext } from '../../filler-frame-buffer-context
  * };
  * ```
  */
-export type MessageToWorker<FillerParams> =
-  | { type: 'init', config: FillerFrameBufferContext, fillerParams: FillerParams }
-  | { type: 'start' }
-  | { type: 'stop' }
+export type MessageToWorker<FillerParams>
+  = | { type: 'init', config: FillerFrameBufferContext, fillerParams: FillerParams }
+    | { type: 'start' }
+    | { type: 'stop' }
 
 /**
  * Message sent from the worker to the main thread.
@@ -43,6 +43,6 @@ export type MessageToWorker<FillerParams> =
  * };
  * ```
  */
-export type MessageToStrategy =
-  | { type: 'init-done' }
-  | { type: 'stop', stopFrames: bigint }
+export type MessageToStrategy
+  = | { type: 'init-done' }
+    | { type: 'stop', stopFrames: bigint }
