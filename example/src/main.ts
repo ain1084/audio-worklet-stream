@@ -22,7 +22,7 @@ class Main {
       })
       const frameBufferSize = this.factory!.audioContext.sampleRate
       const [node, writer] = await this.factory!.createManualBufferNode({
-        channelCount: frequencies.length, frameBufferSize })
+        channelCount: frequencies.length, frameCount: frameBufferSize })
       writer.write((segment) => {
         for (let i = 0; i < segment.frameCount; ++i) {
           generators.forEach((generator, channelIndex) => {
