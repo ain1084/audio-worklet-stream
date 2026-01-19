@@ -3,7 +3,6 @@
   "out": "docs",
   "excludePrivate": true,
   "excludeProtected": true,
-  "includeVersion": true,
   "hideGenerator": true,
   "exclude": [ "**/dist/**/*"]
 }
