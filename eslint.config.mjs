@@ -26,5 +26,5 @@ export default [
     },
   },
   ...tsEslint.configs.recommended,
-  stylistic.configs['recommended-flat'],
+  stylistic.configs['recommended'],
 ]
