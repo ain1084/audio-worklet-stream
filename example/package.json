@@ -1,6 +1,6 @@
 {
   "name": "audio-worklet-stream-example",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run start\" \"npm --prefix .. run watch\"",
@@ -13,14 +13,14 @@
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^5.7.0",
-    "@types/audioworklet": "^0.0.92",
+    "@types/audioworklet": "^0.0.102",
     "@types/node": "^25.0.9",
     "@typescript-eslint/parser": "^8.53.0",
     "eslint": "^9.39.2",
-    "globals": "^17.0.0",
+    "globals": "^17.14.0",
     "typescript-eslint": "^8.53.0",
     "concurrently": "^9.2.1",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "vite": "^7.3.1"
   }
 }

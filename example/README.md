@@ -11,12 +11,14 @@ This directory contains an example demonstrating the usage of the Audio Worklet 
 To run the example, follow these steps:
 
 1. **Install Dependencies**: Navigate to the example directory and install the dependencies.
+
    ```bash
    cd example
    npm install
    ```
 
 2. **Start the Development Server**: Use Vite to start the development server.
+
    ```bash
    npm run dev
    ```

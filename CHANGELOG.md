@@ -4,12 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.3] - 2026-11-20
 
 ### Changed
 
 - Updated TypeDoc from 0.28.16 to 0.28.20 and refreshed the development dependency lockfile.
-- Updated typescript-eslint and @typescript-eslint/parser to 8.73.0, which uses the patched minimatch 11 release.
+- Updated `@ain1084/audio-frame-buffer` to 0.2.1.
+- Updated the library and example to TypeScript 6.0.3 and Vite 7.3.8, and refreshed the ESLint tooling and type definitions.
+- Switched the library and example to `bundler` module resolution. Set the library's source root to `src` to preserve the `dist` layout, and removed the example's deprecated `baseUrl` setting.
+- Updated the example to 1.0.2 and aligned its ESLint Stylistic preset with the library.
+- Migrated documentation deployment to the official GitHub Pages Actions. The workflow uploads the generated docs as an artifact and deploys it from `main` without a token secret reference.
+
+### Security
+
+- Updated `typescript-eslint` and `@typescript-eslint/parser` to 8.73.0 to use the patched `minimatch` 11 release.
 
 ## [2.0.2] - 2026-01-20
 
